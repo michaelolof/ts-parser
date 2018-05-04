@@ -13,11 +13,11 @@
 9 verbose lifecycle ts-parser@1.0.0~push:github: PATH: C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin;C:\Users\Michael\Desktop\M.O.O\Programs\custom-npm-modules\ts-parser\node_modules\.bin;C:\cmder\bin;C:\Program Files\Git\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\share\vim\vim74;C:\cmder\vendor\conemu-maximus5\ConEmu\Scripts;C:\cmder\vendor\conemu-maximus5;C:\cmder\vendor\conemu-maximus5\ConEmu;C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\laragon\bin\php\php-7.1.5-Win32-VC14-x64;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files\nodejs\;C:\xampp\php;C:\Program Files\Git\cmd;C:\Ruby24-x64\bin;C:\Program Files (x86)\Yarn\bin;C:\Program Files\Manual_CLI;C:\Program Files\MongoDB\Server\3.4\bin;C:\Python27;C:\Python27\Scripts;C:\Users\Michael\.windows-build-tools\vv;C:\Users\Michael\Desktop\M.O.O\Programs\bin\phantomjs-2.1.1-windows\bin;C:\OpenCV\build\x64\vc14\bin;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\laragon\bin\mysql\mysql-5.7.18-winx64\bin;C:\Program Files\hlint-2.0.12;C:\kotlinc\bin;C:\Ruby24-x64\bin;C:\Users\Michael\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\Microsoft VS Code\bin;C:\Users\Michael\AppData\Roaming\npm;C:\Users\Michael\AppData\Local\Yarn\bin;C:\Users\Michael\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Users\Michael\Desktop\M.O.O\Programs\bin;C:\Users\Michael\Desktop\M.O.O\Programs\bin\bash;;C:\cmder
 10 verbose lifecycle ts-parser@1.0.0~push:github: CWD: C:\Users\Michael\Desktop\M.O.O\Programs\custom-npm-modules\ts-parser
 11 silly lifecycle ts-parser@1.0.0~push:github: Args: [ '/d /s /c',
-11 silly lifecycle   'git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;' ]
-12 silly lifecycle ts-parser@1.0.0~push:github: Returned: code: 129  signal: null
+11 silly lifecycle   'git remote add origin https://github.com/michaelolof/ts-parser.git && git push -u origin master;' ]
+12 silly lifecycle ts-parser@1.0.0~push:github: Returned: code: 128  signal: null
 13 info lifecycle ts-parser@1.0.0~push:github: Failed to exec push:github script
-14 verbose stack Error: ts-parser@1.0.0 push:github: `git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;`
-14 verbose stack Exit status 129
+14 verbose stack Error: ts-parser@1.0.0 push:github: `git remote add origin https://github.com/michaelolof/ts-parser.git && git push -u origin master;`
+14 verbose stack Exit status 128
 14 verbose stack     at EventEmitter.<anonymous> (C:\Program Files\nodejs\node_modules\npm\lib\utils\lifecycle.js:255:16)
 14 verbose stack     at emitTwo (events.js:106:13)
 14 verbose stack     at EventEmitter.emit (events.js:191:7)
@@ -33,14 +33,14 @@
 19 error node v6.9.4
 20 error npm  v3.10.10
 21 error code ELIFECYCLE
-22 error ts-parser@1.0.0 push:github: `git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;`
-22 error Exit status 129
-23 error Failed at the ts-parser@1.0.0 push:github script 'git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;'.
+22 error ts-parser@1.0.0 push:github: `git remote add origin https://github.com/michaelolof/ts-parser.git && git push -u origin master;`
+22 error Exit status 128
+23 error Failed at the ts-parser@1.0.0 push:github script 'git remote add origin https://github.com/michaelolof/ts-parser.git && git push -u origin master;'.
 23 error Make sure you have the latest version of node.js and npm installed.
 23 error If you do, this is most likely a problem with the ts-parser package,
 23 error not with npm itself.
 23 error Tell the author that this fails on your system:
-23 error     git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;
+23 error     git remote add origin https://github.com/michaelolof/ts-parser.git && git push -u origin master;
 23 error You can get information on how to open an issue for this project with:
 23 error     npm bugs ts-parser
 23 error Or if that isn't available, you can get their info via:
