@@ -1,4 +1,6 @@
-import { Identifier, isVariableDeclaration, VariableDeclaration, Node, ClassDeclaration, SyntaxKind, SourceFile, } from 'typescript';
+import { 
+  Identifier, isVariableDeclaration, VariableDeclaration, Node, ClassDeclaration, 
+  SyntaxKind, SourceFile, Token, ImportDeclaration } from 'typescript';
 import { MixinDeclaration } from './Mixin';
 
 export function getInlineRangeFromPosition(namedElement:Identifier,  source:SourceFile = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
@@ -67,4 +69,11 @@ export type Range = {
   end:Position,
 }
 
-
+export function getImportFromSourceByModuleName(moduleName:string, source:SourceFile):ImportDeclaration|undefined {
+  const importTokens = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
+  for(let token of importTokens) {
+    const path = token["text"] as string;
+    if( path.endsWith( moduleName ) ) return token.parent as ImportDeclaration;
+  }
+  return undefined;
+}

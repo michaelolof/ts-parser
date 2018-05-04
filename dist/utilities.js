@@ -54,4 +54,15 @@ var Severity;
     Severity[Severity["Warning"] = 0] = "Warning";
     Severity[Severity["Error"] = 1] = "Error";
 })(Severity = exports.Severity || (exports.Severity = {}));
+function getImportFromSourceByModuleName(moduleName, source) {
+    var importTokens = source["imports"];
+    for (var _i = 0, importTokens_1 = importTokens; _i < importTokens_1.length; _i++) {
+        var token = importTokens_1[_i];
+        var path = token["text"];
+        if (path.endsWith(moduleName))
+            return token.parent;
+    }
+    return undefined;
+}
+exports.getImportFromSourceByModuleName = getImportFromSourceByModuleName;
 //# sourceMappingURL=utilities.js.map

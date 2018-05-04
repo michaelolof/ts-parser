@@ -1,4 +1,4 @@
-import { Identifier, VariableDeclaration, Node, ClassDeclaration, SourceFile } from 'typescript';
+import { Identifier, VariableDeclaration, Node, ClassDeclaration, SourceFile, ImportDeclaration } from 'typescript';
 import { MixinDeclaration } from './Mixin';
 export declare function getInlineRangeFromPosition(namedElement: Identifier, source?: SourceFile, name?: string): Range;
 export declare function createErrorDiagnostic(source: string, range: Range, message: string, code?: string): Diagnostic;
@@ -27,3 +27,4 @@ export declare type Range = {
     start: Position;
     end: Position;
 };
+export declare function getImportFromSourceByModuleName(moduleName: string, source: SourceFile): ImportDeclaration | undefined;
