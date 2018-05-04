@@ -1,7 +1,7 @@
-import { Identifier, isVariableDeclaration, VariableDeclaration, Node, ClassDeclaration, SyntaxKind, } from 'typescript';
+import { Identifier, isVariableDeclaration, VariableDeclaration, Node, ClassDeclaration, SyntaxKind, SourceFile, } from 'typescript';
 import { MixinDeclaration } from './Mixin';
 
-export function getInlineRangeFromPosition(namedElement:Identifier,  source = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
+export function getInlineRangeFromPosition(namedElement:Identifier,  source:SourceFile = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
   const endPosition:Position = source.getLineAndCharacterOfPosition( namedElement.end ) 
   const startPosition:Position = { line: endPosition.line, character: endPosition.character - name.length };
   return {
