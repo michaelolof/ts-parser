@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "cross-env NODE_ENV=development mocha -r C:\\Users\\Michael\\AppData\\Roaming\\npm\\node_modules\\ts-node\\register test/**/*.test.ts --reporter=\"min\" --watch --watch-extensions ts"
+    "test": "cross-env NODE_ENV=development mocha -r C:\\Users\\Michael\\AppData\\Roaming\\npm\\node_modules\\ts-node\\register test/**/*.test.ts --reporter=\"min\" --watch --watch-extensions ts",
+    "push:github": "git remote add origin https://github.com/michaelolof/ts-parser.git; git push -u origin master;"
   },
   "author": "michaelolof",
   "license": "ISC",
