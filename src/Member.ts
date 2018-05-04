@@ -151,7 +151,8 @@ export class Method extends Member {
     let n:SourceFile | Node = source;
     if( node ) n = node;
     const condition = (node:Node) => {
-      if( Method.isAMethod( node ) ) return new Method( node as MethodDeclaration, source.fileName ); 
+      if( Method.isAMethod( node ) ) return new Method( node as MethodDeclaration, source.fileName );
+      else return undefined; 
     }
     return find<Method>( n as any, condition );
   }

@@ -1,11 +1,6 @@
 import { 
   Program as tsProgram, Symbol, displayPartsToString, TypeChecker, Signature, Node, 
   getCombinedModifierFlags, ModifierFlags, SyntaxKind } from 'typescript';
-import { find, Variable } from '.';
-import { issa } from './utilities';
-import { Class } from './Class';
-import { SymbolizedHolder, SymbolizedMember, SymbolizedHolderArray } from './Checker';
-import { ThisCall } from './Statement';
 
 export class Program {
   
@@ -17,77 +12,77 @@ export class Program {
     this.checker = this.program.getTypeChecker();
   }
 
-  async getTypes(transform:TransformedUseLintTree) {
-    const rootFiles = this.program.getRootFileNames();
-    const self = this;
-    const holders = new SymbolizedHolderArray();
+  // async getTypes(transform:TransformedUseLintTree) {
+  //   const rootFiles = this.program.getRootFileNames();
+  //   const self = this;
+  //   const holders = new SymbolizedHolderArray();
 
-    for(let file of rootFiles) {
-      const source = this.program.getSourceFile( file );
-      if( source === undefined ) { 
-        console.error("source not found"); 
-        continue; 
-      }
+  //   for(let file of rootFiles) {
+  //     const source = this.program.getSourceFile( file );
+  //     if( source === undefined ) { 
+  //       console.error("source not found"); 
+  //       continue; 
+  //     }
 
-      // Find all classes or variables in the file.
-      const allClassesOrVariables = 
-        await find<Class | Variable>( source, condition );
-      if( allClassesOrVariables === undefined ) { 
-        console.error(`Strange No classes or variable found in file:${file}`);
-        continue;
-      }
+  //     // Find all classes or variables in the file.
+  //     const allClassesOrVariables = 
+  //       await find<Class | Variable>( source, condition );
+  //     if( allClassesOrVariables === undefined ) { 
+  //       console.error(`Strange No classes or variable found in file:${file}`);
+  //       continue;
+  //     }
 
-      // Check if class or variable is lintable
-      const lintables = transform[ file ]
+  //     // Check if class or variable is lintable
+  //     const lintables = transform[ file ]
 
-      for(let classOrVariable of allClassesOrVariables) {
-        const found = lintables.findByName( classOrVariable.name );
-        if( found === undefined ) continue;
+  //     for(let classOrVariable of allClassesOrVariables) {
+  //       const found = lintables.findByName( classOrVariable.name );
+  //       if( found === undefined ) continue;
 
-        const symbolizedMembers = [] as SymbolizedMember[];
-        const members = classOrVariable.getMembers();
-        for(let member of members) {
-          const signature = member.getSymbolSignature( self.checker, classOrVariable.element );
-          let type:"property" | "method" = "property";
-          let methodThisCalls:ThisCall[] | undefined = undefined;
-          let methodsNoOfArguments:number|undefined = undefined;
-          if( member.isAMethod() ) {
-            type = "method";
-            methodThisCalls = await member.getMethodBodyThisCalls();
-            methodsNoOfArguments = member.getMethodNumberOfArguments();
-          }
-          let accessor = member.getAccessor();
-          symbolizedMembers.push({
-            memberName: member.name,
-            memberRange: member.getNameRange(),
-            signature,
-            type,
-            accessor,
-            methodThisCalls,
-            methodsNoOfArguments
-          })
-        }
-        holders.push( new SymbolizedHolder(
-          classOrVariable.name,
-          classOrVariable.getNameRange(),
-          file,
-          found.type,
-          symbolizedMembers,
-          found.mixins,
-        ));
-      }
+  //       const symbolizedMembers = [] as SymbolizedMember[];
+  //       const members = classOrVariable.getMembers();
+  //       for(let member of members) {
+  //         const signature = member.getSymbolSignature( self.checker, classOrVariable.element );
+  //         let type:"property" | "method" = "property";
+  //         let methodThisCalls:ThisCall[] | undefined = undefined;
+  //         let methodsNoOfArguments:number|undefined = undefined;
+  //         if( member.isAMethod() ) {
+  //           type = "method";
+  //           methodThisCalls = await member.getMethodBodyThisCalls();
+  //           methodsNoOfArguments = member.getMethodNumberOfArguments();
+  //         }
+  //         let accessor = member.getAccessor();
+  //         symbolizedMembers.push({
+  //           memberName: member.name,
+  //           memberRange: member.getNameRange(),
+  //           signature,
+  //           type,
+  //           accessor,
+  //           methodThisCalls,
+  //           methodsNoOfArguments
+  //         })
+  //       }
+  //       holders.push( new SymbolizedHolder(
+  //         classOrVariable.name,
+  //         classOrVariable.getNameRange(),
+  //         file,
+  //         found.type,
+  //         symbolizedMembers,
+  //         found.mixins,
+  //       ));
+  //     }
 
-    }
+  //   }
 
-    return holders;
+  //   return holders;
 
-    function condition(node:Node):Class | Variable | undefined {
-      if( issa.variable( node ) ) return new Variable( node, "" );
-      else
-      if( issa._class( node ) ) return new Class( node, "" );
-      else return undefined;  
-    }
-  }
+  //   function condition(node:Node):Class | Variable | undefined {
+  //     if( issa.variable( node ) ) return new Variable( node, "" );
+  //     else
+  //     if( issa._class( node ) ) return new Class( node, "" );
+  //     else return undefined;  
+  //   }
+  // }
   
   serializeSymbol(symbol:Symbol):DocEntry {
     return {
