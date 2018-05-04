@@ -2,7 +2,8 @@
   "name": "ts-parser",
   "version": "1.0.0",
   "description": "A module that provides wrapper classes for typescript syntax",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "test": "cross-env NODE_ENV=development mocha -r C:\\Users\\Michael\\AppData\\Roaming\\npm\\node_modules\\ts-node\\register test/**/*.test.ts --reporter=\"min\" --watch --watch-extensions ts"
   },
