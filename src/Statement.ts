@@ -1,6 +1,7 @@
-import { finder } from ".";
-import { Node, SourceFile, SyntaxKind, CallExpression, isCallExpression, isPropertyAccessExpression, isExpressionStatement, ExpressionStatement, TypeChecker } from "typescript";
-import { InferedSignature } from './Checker';
+import { find } from ".";
+import { 
+  Node, SourceFile, SyntaxKind, CallExpression, isCallExpression, isPropertyAccessExpression, 
+  isExpressionStatement, ExpressionStatement } from "typescript";
 
 export type ThisCallType = "property" | "method";
 export type ThisCallAccessor = "instance" | "static";
@@ -22,7 +23,7 @@ export abstract class ThisCall {
   }
 
   static FindAll(body:Node):Promise<ThisCall[] | undefined> {
-    const calls = finder.flexibleFind( body as SourceFile, condition );
+    const calls = find( body as SourceFile, condition );
     return calls;
     //--------------------------------------------------------
     function condition(node:Node):ThisCall | undefined {
@@ -60,6 +61,7 @@ export abstract class MethodThisCall extends ThisCall {
   type: "method";
   constructor( public element:CallExpression ) {
     super( element );
+    this.type = "method";
   }
 
   inferSignature():number {
@@ -72,6 +74,7 @@ export abstract class PropertyThisCall extends ThisCall {
   type: "property";
   constructor(public element:ExpressionStatement) {
     super( element );
+    this.type = "property"
   }
   inferSignature():"any" {
     return "any"

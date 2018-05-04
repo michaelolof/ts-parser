@@ -4,8 +4,7 @@
   "description": "A module that provides wrapper classes for typescript syntax",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "unit-test": "cross-env NODE_ENV=development mocha -r C:\\Users\\Michael\\AppData\\Roaming\\npm\\node_modules\\ts-node\\register test/**/*.test.ts --reporter=\"min\" --watch --watch-extensions ts"
+    "test": "cross-env NODE_ENV=development mocha -r C:\\Users\\Michael\\AppData\\Roaming\\npm\\node_modules\\ts-node\\register test/**/*.test.ts --reporter=\"min\" --watch --watch-extensions ts"
   },
   "author": "michaelolof",
   "license": "ISC",

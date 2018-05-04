@@ -1,13 +1,11 @@
 import { 
   Program as tsProgram, Symbol, displayPartsToString, TypeChecker, Signature, Node, 
   getCombinedModifierFlags, ModifierFlags, SyntaxKind } from 'typescript';
-import { TransformedUseLintTree } from './linter/trees';
-import { finder, Variable } from '.';
+import { find, Variable } from '.';
 import { issa } from './utilities';
 import { Class } from './Class';
 import { SymbolizedHolder, SymbolizedMember, SymbolizedHolderArray } from './Checker';
 import { ThisCall } from './Statement';
-import { TextDocument } from 'vscode-languageserver/lib/main';
 
 export class Program {
   
@@ -19,7 +17,7 @@ export class Program {
     this.checker = this.program.getTypeChecker();
   }
 
-  async getTypes(textDocument:TextDocument, transform:TransformedUseLintTree) {
+  async getTypes(transform:TransformedUseLintTree) {
     const rootFiles = this.program.getRootFileNames();
     const self = this;
     const holders = new SymbolizedHolderArray();
@@ -33,7 +31,7 @@ export class Program {
 
       // Find all classes or variables in the file.
       const allClassesOrVariables = 
-        await finder.flexibleFind<Class | Variable>( source, condition );
+        await find<Class | Variable>( source, condition );
       if( allClassesOrVariables === undefined ) { 
         console.error(`Strange No classes or variable found in file:${file}`);
         continue;
@@ -61,7 +59,7 @@ export class Program {
           let accessor = member.getAccessor();
           symbolizedMembers.push({
             memberName: member.name,
-            memberRange: member.getNameRange(textDocument),
+            memberRange: member.getNameRange(),
             signature,
             type,
             accessor,
@@ -71,7 +69,7 @@ export class Program {
         }
         holders.push( new SymbolizedHolder(
           classOrVariable.name,
-          classOrVariable.getNameRange( textDocument ),
+          classOrVariable.getNameRange(),
           file,
           found.type,
           symbolizedMembers,

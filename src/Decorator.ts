@@ -1,23 +1,23 @@
-import * as ts from 'typescript';
+import { Decorator as ts_Decorator, Identifier } from 'typescript';
 
 
 export class Decorator {
 
-  readonly decoratorElement:ts.Decorator;
+  readonly decoratorElement:ts_Decorator;
   readonly filePath:string;
 
-  constructor(decoratorElement:ts.Decorator, filePath:string) {
+  constructor(decoratorElement:ts_Decorator, filePath:string) {
     this.decoratorElement = decoratorElement;
     this.filePath = filePath;
   }
 
-  get name() {
+  get name():string {
     let n:string;
     n = this.decoratorElement.expression["escapedText"];
     if( n ) return n;
     n = this.decoratorElement.expression["expression"].escapedText;
     if( n ) return n;
-    throw new RangeError("Cannot get name of decorator. Inspect the object manually and update method").stack
+    else throw new RangeError("Cannot get name of decorator. Inspect the object manually and update method").stack
   }
 
   /**
@@ -26,7 +26,7 @@ export class Decorator {
    */
   getArguments():string[] {
     const args:string[] = [];
-    const argsObj = this.decoratorElement.expression["arguments"] as ts.Identifier[];
+    const argsObj = this.decoratorElement.expression["arguments"] as Identifier[];
     if( argsObj ) {
       for( let argObj of argsObj ) {
         args.push( argObj.escapedText as string );

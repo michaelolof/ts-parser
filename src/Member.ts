@@ -1,10 +1,10 @@
 import { Node, SyntaxKind, MethodDeclaration, SourceFile, Block, TypeChecker, Symbol, Identifier }  from 'typescript';
-import { finder, String as tsmix_String } from "../tsmix";
 import { Decorator } from './Decorator';
-import { ThisCall, MethodThisCall } from './Statement';
-import { Range, Position, TextDocument } from 'vscode-languageserver/lib/main';
-import { getInlineRangeFromPosition } from './utilities';
+import { ThisCall } from './Statement';
+import { getInlineRangeFromPosition, Range } from './utilities';
 import { SymbolizedMember } from './Checker';
+import { find } from '.';
+
 
 export class Member {
   readonly element:Node;
@@ -30,7 +30,7 @@ export class Member {
     return checker.typeToString( checker.getTypeOfSymbolAtLocation( symbol, node ) );
   }
 
-  async getSymbolizedMember(document:TextDocument, checker:TypeChecker, node?:Node) {
+  async getSymbolizedMember(checker:TypeChecker, node?:Node) {
     let type:"method"|"property" = "property"
     let methodThisCall:ThisCall[]|undefined = undefined;
     if( this.isAMethod() ) {
@@ -41,7 +41,7 @@ export class Member {
     return new SymbolizedMember( 
       type,
       this.name,
-      this.getNameRange( document ),
+      this.getNameRange(),
       this.getSymbolSignature( checker, node),
       this.getAccessor(),
       methodThisCall,
@@ -57,9 +57,9 @@ export class Member {
     return "instance"
   }
 
-  getNameRange(document:TextDocument):Range {
+  getNameRange():Range {
     if( this.element.kind === SyntaxKind.Constructor ) return {} as Range
-    return getInlineRangeFromPosition( document, this.element["name"] )    
+    return getInlineRangeFromPosition( this.element["name"] as Identifier )    
   }
 
   getMethodBodyThisCalls() {
@@ -118,7 +118,9 @@ export class VariableMember extends Member {}
 
 export class Method extends Member {
   
-  element: MethodDeclaration;
+  constructor(public element:MethodDeclaration, filePath:string) {
+    super(element, filePath)
+  }
   
   get body():Block|undefined {
     return this.element.body;
@@ -132,15 +134,14 @@ export class Method extends Member {
    * Checks if a string resembles a method call.
    */
   static isStringAMethod(method:string) {
-    const m = new tsmix_String( method );
-    return ( m.has("(") && m.has(")") )
+    return ( method.includes("(") && method.includes(")") )
   }
 
   static getMethods(members:Member[]) {
     const methods:Method[] = [];
     for(let member of members) {
       if( Method.isAMethod(member.element) ) {
-        methods.push( new Method( member.element, member.filePath ) );
+        methods.push( new Method( member.element as MethodDeclaration, member.filePath ) );
       }
     }
     return methods;
@@ -149,9 +150,10 @@ export class Method extends Member {
   static FindAll(source:SourceFile, node?:Node) {
     let n:SourceFile | Node = source;
     if( node ) n = node;
-    const condition = (node:Node) => Method.isAMethod( node );
-    const instantiator = (node:Node) => new Method( node, source.fileName );
-    return finder.find<Method>( n as any, condition, instantiator );
+    const condition = (node:Node) => {
+      if( Method.isAMethod( node ) ) return new Method( node as MethodDeclaration, source.fileName ); 
+    }
+    return find<Method>( n as any, condition );
   }
 
 }

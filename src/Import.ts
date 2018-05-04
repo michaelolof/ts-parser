@@ -1,15 +1,15 @@
-import * as ts from 'typescript';
-import * as tsmix from "../tsmix";
+import { ImportDeclaration, Identifier, Node, SyntaxKind } from 'typescript';
+import { ImportResolver } from "./ImportResolver";
 
 export class Import {
 
   readonly filePath:string
-  readonly importDeclaration:ts.ImportDeclaration;
+  readonly importDeclaration:ImportDeclaration;
   readonly moduleDeclaration:string;
   readonly moduleName:string;
-  private __format:ImportFormat;
+  private __format:ImportFormat|undefined;
   
-  constructor(importDeclaration:ts.ImportDeclaration, filePath:string) {
+  constructor(importDeclaration:ImportDeclaration, filePath:string) {
     this.filePath = filePath;
     this.importDeclaration = importDeclaration;
     this.moduleDeclaration = this.importDeclaration.moduleSpecifier["text"] as string;
@@ -18,6 +18,10 @@ export class Import {
   }
 
   get format():ImportFormat {
+    if( this.__format === undefined ) {
+      this.getImportedObjects()
+      return this.__format!
+    }
     return this.__format;
   }
 
@@ -42,8 +46,8 @@ export class Import {
 
     const importMembers: ImportedObject[] = [];
     for (let namedBindingsElement of namedBindingsElements) {
-      const propertyName = namedBindingsElement!["propertyName"] as ts.Identifier;
-      const name = namedBindingsElement!["name"] as ts.Identifier;
+      const propertyName = namedBindingsElement!["propertyName"] as Identifier;
+      const name = namedBindingsElement!["name"] as Identifier;
       let memberName:string|undefined, memberAlias:string|undefined;
 
       if( this.__format === ImportFormat.Namespaced ) {
@@ -64,11 +68,41 @@ export class Import {
   }
 
   resolvePath(extension:string) {
-    return new tsmix.ImportResolver( this.filePath ).resolve(this.moduleDeclaration, extension);
+    return new ImportResolver( this.filePath ).resolve(this.moduleDeclaration, extension);
   }
 
-  static isAImport(node:ts.Node):boolean {
-    return node.kind === ts.SyntaxKind.ImportDeclaration;
+  static isAImport(node:Node):node is ImportDeclaration {
+    return node.kind === SyntaxKind.ImportDeclaration;
+  }
+
+    /**
+   * Locates a module in the source document. Returns the Import object if found and undefined if not found.
+   */
+  static findModule(name: string, imports:Import[]) {
+    for( let imp of imports ) {
+      if( imp.moduleName === name ) return imp;
+    }
+    return undefined;
+  }
+
+    /**
+   * Locates and returns an imported object if found and undefined if not found.
+   */
+  static findObject(name:string, imports:Import[]):ImportedObject|undefined {
+    for(let imp of imports) {
+      const members = imp.getImportedObjects()
+      for(let member of members) {
+        if( member.alias ) {
+          if( member.alias === name ) {
+            return member;          }
+        } else {
+          if( member.name === name ) {
+            return member;
+          }
+        }        
+      }
+    }
+    return undefined;
   }
 
 
@@ -77,7 +111,7 @@ export class Import {
 export enum ImportFormat {
   Default, // import a from "module"
   Object, // import { a, b } from "module"
-  Namespaced // import * as a from "module"
+  Namespaced, // import * as a from "module"
 }
 
 export class ImportedObject {

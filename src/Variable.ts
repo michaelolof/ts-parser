@@ -1,15 +1,14 @@
-import * as ts from 'typescript';
-import * as tsmix from "../tsmix"
-import { Range, Position, TextDocument } from 'vscode-languageserver/lib/main';
-import { getInlineRangeFromPosition } from './utilities';
+import { getInlineRangeFromPosition, Range } from './utilities';
+import { VariableMember, Method } from './Member';
+import { VariableDeclaration, Identifier, Symbol } from 'typescript';
 
 export class Variable {
   
-  readonly element:ts.VariableDeclaration;
+  readonly element:VariableDeclaration;
   readonly filePath:string;
-  private __members:tsmix.VariableMember[]
+  private __members:VariableMember[] | undefined
 
-  constructor(variable:ts.VariableDeclaration, filePath:string) {
+  constructor(variable:VariableDeclaration, filePath:string) {
     this.element = variable;
     this.filePath = filePath;
   }
@@ -22,8 +21,8 @@ export class Variable {
     return this instanceof type;
   }
 
-  getNameRange(textDocument:TextDocument):Range {
-    return getInlineRangeFromPosition(textDocument, this.element.name );
+  getNameRange():Range {
+    return getInlineRangeFromPosition( this.element.name as Identifier );
   }
 
   /**
@@ -34,7 +33,7 @@ export class Variable {
     const memberElements = this.element!.initializer!["properties"];
     this.__members = [];
     for( let memberElement of memberElements ) {
-      const member = new tsmix.VariableMember( memberElement, this.filePath );
+      const member = new VariableMember( memberElement, this.filePath );
       this.__members.push( member );
     }
     return this.__members;
@@ -42,10 +41,11 @@ export class Variable {
 
   getMethods() {
     const members = this.getMembers();
-    return tsmix.Method.getMethods( members );
+    return Method.getMethods( members );
   }
 
-  getMembersSymbol():Map<string,ts.Symbol> {
+  getMembersSymbol():Map<string,Symbol> | undefined {
+    if( this.element.initializer!["symbol"] === undefined ) return undefined;
     return this.element.initializer!["symbol"].members
   }
 

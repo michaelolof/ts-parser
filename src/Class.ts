@@ -1,27 +1,22 @@
-import * as ts from 'typescript';
-import * as tsmix from '../tsmix';
-import { Range, TextDocument } from 'vscode-languageserver/lib/main';
-import { getInlineRangeFromPosition } from './utilities';
+import { ClassDeclaration, Symbol, TypeChecker, SourceFile } from 'typescript';
 import { SymbolizedMemberArray } from './Checker';
+import { ClassMember, Method } from './Member';
+import { getInlineRangeFromPosition, Range } from './utilities';
+
 
 export class Class {
   
-  readonly element:ts.ClassDeclaration;
-  readonly filePath:string;
-  private __members:tsmix.ClassMember[]
+  private __members:ClassMember[] | undefined;
   mixinNames?:string[];
 
-  constructor(classDeclaration:ts.ClassDeclaration, filePath:string) {
-    this.element = classDeclaration;
-    this.filePath = filePath;
-  }
+  constructor(public readonly element:ClassDeclaration, public readonly filePath:string) {}
 
   get name() {
     return this.element.name!.escapedText as string
   }
 
-  getNameRange(textDocument:TextDocument):Range {
-    return getInlineRangeFromPosition( textDocument, this.element.name! );
+  getNameRange(source?:SourceFile):Range {
+    return getInlineRangeFromPosition( this.element.name!, source );
   }
 
   /**
@@ -33,7 +28,7 @@ export class Class {
     const memberElements = this.element.members
     this.__members = [];
     for( let memberElement of memberElements ) {
-      const member = new tsmix.ClassMember( memberElement, this.filePath );
+      const member = new ClassMember( memberElement, this.filePath );
       this.__members.push( member );
     }
     return this.__members;
@@ -43,7 +38,7 @@ export class Class {
    * Returns a ClassMember instance if found and undefined if not found.
    */
   getMember(name:string) {
-    let members:tsmix.ClassMember[] = this.__members;
+    let members:ClassMember[]|undefined = this.__members;
     if( members === undefined ) members = this.getMembers();
     for(let member of members) {
       if( member.name === name ) return member;
@@ -53,18 +48,19 @@ export class Class {
 
   getMethods() {
     const members = this.getMembers();
-    return tsmix.Method.getMethods( members );
+    return Method.getMethods( members );
   }
 
-  getMembersSymbol():Map<string,ts.Symbol> {
+  getMembersSymbol():Map<string,Symbol>| undefined {
+    if( this.element["symbol"] === undefined ) return undefined;
     return this.element["symbol"].members
   }
 
-  async getMembersSymbolizedMemberArray(document:TextDocument, checker:ts.TypeChecker) {
+  async getMembersSymbolizedMemberArray(checker:TypeChecker) {
     const members = this.getMembers();
     const rtn = new SymbolizedMemberArray();
     for(let member of members) { 
-      rtn.push( await member.getSymbolizedMember(document, checker, this.element ) )
+      rtn.push( await member.getSymbolizedMember(checker, this.element ) )
     }
     return rtn;
   }
@@ -72,9 +68,9 @@ export class Class {
   /**
    * Returns an array of tsmix.ClassMember if found and an empty array if not found.
    */
-  hasMembersUsingDecorator(decoratorName:string):tsmix.ClassMember[] {
+  hasMembersUsingDecorator(decoratorName:string):ClassMember[] {
     const members = this.getMembers();
-    const membersUsingDecorators:tsmix.ClassMember[] = []
+    const membersUsingDecorators:ClassMember[] = []
     for(let member of members) {
       if( member.isUsingDecorator( decoratorName ) ) {
         membersUsingDecorators.push( member )
@@ -83,7 +79,7 @@ export class Class {
     return membersUsingDecorators;
   }
 
-  getMemberUsingDecorator(decoratorName:string, memberName:string):tsmix.ClassMember|undefined {
+  getMemberUsingDecorator(decoratorName:string, memberName:string):ClassMember|undefined {
     const member = this.getMember( memberName );
     if( member === undefined ) return undefined;
     if( member.isUsingDecorator( decoratorName) ) return member;   
@@ -94,16 +90,13 @@ export class Class {
     return this instanceof type
   }
 
-  hasMemberByNameAndAccessor(name:string, accessor:"static"|"instance"):tsmix.ClassMember | undefined {
+  hasMemberByNameAndAccessor(name:string, accessor:"static"|"instance"):ClassMember | undefined {
     const members = this.getMembers();
     for(let member of members ) {
       if( member.name === name && member.getAccessor() === accessor ) return member
     }
     return undefined;
   }
-
   
 }
-
-
 
