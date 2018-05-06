@@ -22,7 +22,7 @@ export abstract class ThisCall {
     this.code = element.getFullText().trim();
   }
 
-  static FindAll(body:Node):Promise<ThisCall[] | undefined> {
+  static Find(body:Node):Promise<ThisCall[] | undefined> {
     const calls = find( body as SourceFile, condition );
     return calls;
     //--------------------------------------------------------
@@ -54,7 +54,6 @@ export abstract class ThisCall {
   }
 
 }
-
 
 export abstract class MethodThisCall extends ThisCall {
   abstract accessor:"static" | "instance"

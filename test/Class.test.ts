@@ -2,7 +2,6 @@ import { Class } from '../src/Class';
 import { expect } from "chai";
 import { ClassMember } from '../src/Member';
 import { createMockSource } from "./index.test";
-import { findClass } from '../src/finder';
 import { SourceFile } from "typescript";
 
 describe("(class) => Class.ts", () => {
@@ -27,7 +26,7 @@ describe("(class) => Class.ts", () => {
         }
       }`;
     source = createMockSource( sourceText );
-    const classes = await findClass( source );
+    const classes = await Class.Find( source );
     if( classes === undefined ) throw new Error("couldn't find a class declaration in " + sourceText );
     classOne = classes[ 0 ];
   })

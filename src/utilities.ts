@@ -1,7 +1,4 @@
-import { 
-  Identifier, isVariableDeclaration, VariableDeclaration, Node, ClassDeclaration, 
-  SyntaxKind, SourceFile, Token, ImportDeclaration } from 'typescript';
-import { MixinDeclaration } from './Mixin';
+import { Identifier, Node, SyntaxKind, SourceFile, Token, ImportDeclaration } from 'typescript';
 
 export function getInlineRangeFromPosition(namedElement:Identifier,  source:SourceFile = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
   const endPosition:Position = source.getLineAndCharacterOfPosition( namedElement.end ) 
@@ -28,22 +25,43 @@ export function cleanUpFilePath(filePath:string) {
   return filePath; 
 }
 
-export namespace issa {
-  export function variable(node:Node): node is VariableDeclaration  {
-    const otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
-    if( otherTruths ) {
-      return isVariableDeclaration( node );
+export function find<T>(source: SourceFile, condition: (node: Node) => (T|undefined), deepFind = true):Promise<T[] | undefined> {
+  function find(onFound: (t: T) => void) {
+    function iterator(sourceFile: SourceFile | Node) {
+      sourceFile.forEachChild(childNode => {
+        // Only a class can use a decorator. So we search for classes.
+        const con = condition(childNode)
+        if( con ) onFound( con );
+        if (deepFind) iterator(childNode);
+      });
     }
-    else return false
+    iterator(source);
   }
 
-  export function _class(node:Node): node is ClassDeclaration {
-    return node.kind === SyntaxKind.ClassDeclaration;
-  }
+  const allPromises: Promise<T>[] = [];
 
-  export function mixin(node:Node): node is MixinDeclaration {
-    return  issa.variable( node ) || issa._class( node );
+  find(t => {
+    const promise = new Promise<T>((resolve, reject) => {
+      if (t) {
+        resolve(t)
+      } else {
+        reject("There was an issue. Sort it out.");
+      }
+    });
+    allPromises.push(promise);
+  })
+
+  return Promise.all(allPromises);
+
+}
+
+export function getImportFromSourceByModuleName(moduleName:string, source:SourceFile):ImportDeclaration|undefined {
+  const importTokens = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
+  for(let token of importTokens) {
+    const path = token["text"] as string;
+    if( path.endsWith( moduleName ) ) return token.parent as ImportDeclaration;
   }
+  return undefined;
 }
 
 export type Diagnostic = {
@@ -69,11 +87,3 @@ export type Range = {
   end:Position,
 }
 
-export function getImportFromSourceByModuleName(moduleName:string, source:SourceFile):ImportDeclaration|undefined {
-  const importTokens = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
-  for(let token of importTokens) {
-    const path = token["text"] as string;
-    if( path.endsWith( moduleName ) ) return token.parent as ImportDeclaration;
-  }
-  return undefined;
-}

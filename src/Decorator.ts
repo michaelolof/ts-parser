@@ -1,4 +1,5 @@
-import { Decorator as ts_Decorator, Identifier } from 'typescript';
+import { Decorator as ts_Decorator, Identifier, Node, SyntaxKind, SourceFile } from 'typescript';
+import { find } from './utilities';
 
 
 export class Decorator {
@@ -33,6 +34,17 @@ export class Decorator {
       }
     }
     return args;
+  }
+
+  static IsADecorator(node:Node):node is ts_Decorator {
+    return node.kind === SyntaxKind.Decorator;
+  }
+
+  static Find(source:SourceFile) {
+    return find(source, node => {
+      if( Decorator.IsADecorator( node ) ) return new Decorator( node, source.fileName );
+      else return undefined;
+    });
   }
 
 }

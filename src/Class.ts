@@ -1,8 +1,8 @@
-import { ClassDeclaration, Symbol, TypeChecker, SourceFile } from 'typescript';
+import { ClassDeclaration, Symbol, TypeChecker, SourceFile, Node, SyntaxKind } from 'typescript';
 import { SymbolizedMemberArray } from './Checker';
 import { ClassMember, Method } from './Member';
 import { getInlineRangeFromPosition, Range } from './utilities';
-
+import { find as _find } from "./utilities"
 
 export class Class {
   
@@ -96,6 +96,22 @@ export class Class {
       if( member.name === name && member.getAccessor() === accessor ) return member
     }
     return undefined;
+  }
+
+  static IsAClass(node:Node): node is ClassDeclaration {
+    return node.kind === SyntaxKind.ClassDeclaration;
+  }
+
+  /**
+   * Returns an array of all Class found in the source file.
+   */
+  static async Find(source:SourceFile) {
+    return _find( source, (node) => {
+      if( Class.IsAClass( node ) ) {
+        return new Class( node, source.fileName  );
+      }
+      else return undefined;
+    })
   }
   
 }

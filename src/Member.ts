@@ -5,7 +5,6 @@ import { getInlineRangeFromPosition, Range } from './utilities';
 import { SymbolizedMember } from './Checker';
 import { find } from '.';
 
-
 export class Member {
   readonly element:Node;
   readonly filePath:string;
@@ -64,7 +63,7 @@ export class Member {
 
   getMethodBodyThisCalls() {
     const methodBody = this.element["body"]
-    const calls = ThisCall.FindAll( methodBody );
+    const calls = ThisCall.Find( methodBody );
     return calls;
   }
 

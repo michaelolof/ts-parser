@@ -1,6 +1,6 @@
-import { getInlineRangeFromPosition, Range } from './utilities';
+import { getInlineRangeFromPosition, Range, find } from './utilities';
 import { VariableMember, Method } from './Member';
-import { VariableDeclaration, Identifier, Symbol } from 'typescript';
+import { VariableDeclaration, Identifier, Symbol, SourceFile, Node, isVariableDeclaration, SyntaxKind } from 'typescript';
 
 export class Variable {
   
@@ -47,6 +47,21 @@ export class Variable {
   getMembersSymbol():Map<string,Symbol> | undefined {
     if( this.element.initializer!["symbol"] === undefined ) return undefined;
     return this.element.initializer!["symbol"].members
+  }
+
+  static IsAVariable(node:Node):node is VariableDeclaration {
+    const otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
+    if( otherTruths ) {
+      return isVariableDeclaration( node );
+    }
+    else return false
+  }
+
+  static Find(source:SourceFile) {
+    return find( source, node => {
+      if( Variable.IsAVariable(node) ) return new Variable( node, source.fileName );
+      else return undefined; 
+    })
   }
 
 }

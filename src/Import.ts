@@ -1,5 +1,6 @@
-import { ImportDeclaration, Identifier, Node, SyntaxKind } from 'typescript';
+import { ImportDeclaration, Identifier, Node, SyntaxKind, SourceFile } from 'typescript';
 import { ImportResolver } from "./ImportResolver";
+import { find as _find } from "./utilities";
 
 export class Import {
 
@@ -71,21 +72,33 @@ export class Import {
     return new ImportResolver( this.filePath ).resolve(this.moduleDeclaration, extension);
   }
 
-  static isAImport(node:Node):node is ImportDeclaration {
+  static IsAImport(node:Node):node is ImportDeclaration {
     return node.kind === SyntaxKind.ImportDeclaration;
   }
 
-    /**
+  /**
    * Locates a module in the source document. Returns the Import object if found and undefined if not found.
    */
-  static findModule(name: string, imports:Import[]) {
+  static FindModule(name: string, imports:Import[]) {
     for( let imp of imports ) {
       if( imp.moduleName === name ) return imp;
     }
     return undefined;
   }
 
-    /**
+  /**
+   * Rwturns an array of all import found in the source file.
+   */
+  static async Find(source:SourceFile) {
+    return _find( source, (node) => {
+      if( Import.IsAImport( node ) ) {
+        return new Import( node, source.fileName  );
+      }
+      else return undefined;
+    })
+  }
+
+  /**
    * Locates and returns an imported object if found and undefined if not found.
    */
   static findObject(name:string, imports:Import[]):ImportedObject|undefined {
@@ -140,6 +153,4 @@ export class ImportedObject {
     else if( this.name ) return this.name;
     else return new Error("both this.alias and this.name are undefined. This function cannot work unless at least one of them is defined.")
   }
-
-
 }

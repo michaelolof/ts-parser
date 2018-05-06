@@ -1,7 +1,6 @@
 export * from "./Checker"
 export * from "./Class"
 export * from "./Decorator"
-export * from "./finder"
 export * from "./Import"
 export * from "./ImportResolver"
 export * from "./Member"
