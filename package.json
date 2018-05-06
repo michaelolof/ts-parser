@@ -1,5 +1,5 @@
 {
-  "name": "@michaelolof/ts-parser",
+  "name": "ts-parser",
   "version": "1.0.3",
   "description": "A module that provides wrapper classes for typescript syntax",
   "main": "dist/index.js",
