@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var utilities_1 = require("./utilities");
 var Member_1 = require("./Member");
+var typescript_1 = require("typescript");
 var Variable = (function () {
     function Variable(variable, filePath) {
         this.element = variable;
@@ -40,6 +41,22 @@ var Variable = (function () {
         if (this.element.initializer["symbol"] === undefined)
             return undefined;
         return this.element.initializer["symbol"].members;
+    };
+    Variable.IsAVariable = function (node) {
+        var otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === typescript_1.SyntaxKind.ObjectLiteralExpression;
+        if (otherTruths) {
+            return typescript_1.isVariableDeclaration(node);
+        }
+        else
+            return false;
+    };
+    Variable.Find = function (source) {
+        return utilities_1.find(source, function (node) {
+            if (Variable.IsAVariable(node))
+                return new Variable(node, source.fileName);
+            else
+                return undefined;
+        });
     };
     return Variable;
 }());

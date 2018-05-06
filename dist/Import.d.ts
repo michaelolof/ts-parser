@@ -1,4 +1,4 @@
-import { ImportDeclaration, Node } from 'typescript';
+import { ImportDeclaration, Node, SourceFile } from 'typescript';
 export declare class Import {
     readonly filePath: string;
     readonly importDeclaration: ImportDeclaration;
@@ -9,8 +9,9 @@ export declare class Import {
     readonly format: ImportFormat;
     getImportedObjects(): ImportedObject[];
     resolvePath(extension: string): string;
-    static isAImport(node: Node): node is ImportDeclaration;
-    static findModule(name: string, imports: Import[]): Import | undefined;
+    static IsAImport(node: Node): node is ImportDeclaration;
+    static FindModule(name: string, imports: Import[]): Import | undefined;
+    static Find(source: SourceFile): Promise<Import[] | undefined>;
     static findObject(name: string, imports: Import[]): ImportedObject | undefined;
 }
 export declare enum ImportFormat {

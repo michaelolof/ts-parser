@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var typescript_1 = require("typescript");
+var utilities_1 = require("./utilities");
 var Decorator = (function () {
     function Decorator(decoratorElement, filePath) {
         this.decoratorElement = decoratorElement;
@@ -30,6 +32,17 @@ var Decorator = (function () {
             }
         }
         return args;
+    };
+    Decorator.IsADecorator = function (node) {
+        return node.kind === typescript_1.SyntaxKind.Decorator;
+    };
+    Decorator.Find = function (source) {
+        return utilities_1.find(source, function (node) {
+            if (Decorator.IsADecorator(node))
+                return new Decorator(node, source.fileName);
+            else
+                return undefined;
+        });
     };
     return Decorator;
 }());

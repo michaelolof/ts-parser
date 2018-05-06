@@ -1,6 +1,6 @@
 import { Range } from './utilities';
 import { VariableMember, Method } from './Member';
-import { VariableDeclaration, Symbol } from 'typescript';
+import { VariableDeclaration, Symbol, SourceFile, Node } from 'typescript';
 export declare class Variable {
     readonly element: VariableDeclaration;
     readonly filePath: string;
@@ -12,4 +12,6 @@ export declare class Variable {
     getMembers(): VariableMember[];
     getMethods(): Method[];
     getMembersSymbol(): Map<string, Symbol> | undefined;
+    static IsAVariable(node: Node): node is VariableDeclaration;
+    static Find(source: SourceFile): Promise<Variable[] | undefined>;
 }

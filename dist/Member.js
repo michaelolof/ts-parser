@@ -113,7 +113,7 @@ var Member = (function () {
     };
     Member.prototype.getMethodBodyThisCalls = function () {
         var methodBody = this.element["body"];
-        var calls = Statement_1.ThisCall.FindAll(methodBody);
+        var calls = Statement_1.ThisCall.Find(methodBody);
         return calls;
     };
     Member.prototype.getMethodNumberOfArguments = function () {

@@ -18,7 +18,7 @@ var ThisCall = (function () {
         this.name = element.expression["name"].escapedText;
         this.code = element.getFullText().trim();
     }
-    ThisCall.FindAll = function (body) {
+    ThisCall.Find = function (body) {
         var calls = _1.find(body, condition);
         return calls;
         function condition(node) {

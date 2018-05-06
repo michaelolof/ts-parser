@@ -9,7 +9,7 @@ export declare abstract class ThisCall {
     abstract type: "method" | "property";
     abstract inferSignature(): number | "any";
     constructor(element: CallExpression | ExpressionStatement);
-    static FindAll(body: Node): Promise<ThisCall[] | undefined>;
+    static Find(body: Node): Promise<ThisCall[] | undefined>;
 }
 export declare abstract class MethodThisCall extends ThisCall {
     element: CallExpression;

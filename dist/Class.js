@@ -35,9 +35,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var typescript_1 = require("typescript");
 var Checker_1 = require("./Checker");
 var Member_1 = require("./Member");
 var utilities_1 = require("./utilities");
+var utilities_2 = require("./utilities");
 var Class = (function () {
     function Class(element, filePath) {
         this.element = element;
@@ -142,6 +144,22 @@ var Class = (function () {
                 return member;
         }
         return undefined;
+    };
+    Class.IsAClass = function (node) {
+        return node.kind === typescript_1.SyntaxKind.ClassDeclaration;
+    };
+    Class.Find = function (source) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, utilities_2.find(source, function (node) {
+                        if (Class.IsAClass(node)) {
+                            return new Class(node, source.fileName);
+                        }
+                        else
+                            return undefined;
+                    })];
+            });
+        });
     };
     return Class;
 }());

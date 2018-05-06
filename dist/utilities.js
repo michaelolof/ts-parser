@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var typescript_1 = require("typescript");
 function getInlineRangeFromPosition(namedElement, source, name) {
     if (source === void 0) { source = namedElement.getSourceFile(); }
     if (name === void 0) { name = namedElement.escapedText; }
@@ -29,31 +28,35 @@ function cleanUpFilePath(filePath) {
     return filePath;
 }
 exports.cleanUpFilePath = cleanUpFilePath;
-var issa;
-(function (issa) {
-    function variable(node) {
-        var otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === typescript_1.SyntaxKind.ObjectLiteralExpression;
-        if (otherTruths) {
-            return typescript_1.isVariableDeclaration(node);
+function find(source, condition, deepFind) {
+    if (deepFind === void 0) { deepFind = true; }
+    function find(onFound) {
+        function iterator(sourceFile) {
+            sourceFile.forEachChild(function (childNode) {
+                var con = condition(childNode);
+                if (con)
+                    onFound(con);
+                if (deepFind)
+                    iterator(childNode);
+            });
         }
-        else
-            return false;
+        iterator(source);
     }
-    issa.variable = variable;
-    function _class(node) {
-        return node.kind === typescript_1.SyntaxKind.ClassDeclaration;
-    }
-    issa._class = _class;
-    function mixin(node) {
-        return issa.variable(node) || issa._class(node);
-    }
-    issa.mixin = mixin;
-})(issa = exports.issa || (exports.issa = {}));
-var Severity;
-(function (Severity) {
-    Severity[Severity["Warning"] = 0] = "Warning";
-    Severity[Severity["Error"] = 1] = "Error";
-})(Severity = exports.Severity || (exports.Severity = {}));
+    var allPromises = [];
+    find(function (t) {
+        var promise = new Promise(function (resolve, reject) {
+            if (t) {
+                resolve(t);
+            }
+            else {
+                reject("There was an issue. Sort it out.");
+            }
+        });
+        allPromises.push(promise);
+    });
+    return Promise.all(allPromises);
+}
+exports.find = find;
 function getImportFromSourceByModuleName(moduleName, source) {
     var importTokens = source["imports"];
     for (var _i = 0, importTokens_1 = importTokens; _i < importTokens_1.length; _i++) {
@@ -65,4 +68,9 @@ function getImportFromSourceByModuleName(moduleName, source) {
     return undefined;
 }
 exports.getImportFromSourceByModuleName = getImportFromSourceByModuleName;
+var Severity;
+(function (Severity) {
+    Severity[Severity["Warning"] = 0] = "Warning";
+    Severity[Severity["Error"] = 1] = "Error";
+})(Severity = exports.Severity || (exports.Severity = {}));
 //# sourceMappingURL=utilities.js.map
