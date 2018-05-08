@@ -1,6 +1,7 @@
 import { getInlineRangeFromPosition, Range, find } from './utilities';
 import { VariableMember, Method } from './Member';
-import { VariableDeclaration, Identifier, Symbol, SourceFile, Node, isVariableDeclaration, SyntaxKind } from 'typescript';
+import { VariableDeclaration, Identifier, Symbol, SourceFile, Node, isVariableDeclaration, SyntaxKind, TypeChecker } from 'typescript';
+import { SymbolizedMemberArray } from './Checker';
 
 export class Variable {
   
@@ -48,6 +49,16 @@ export class Variable {
     if( this.element.initializer!["symbol"] === undefined ) return undefined;
     return this.element.initializer!["symbol"].members
   }
+
+  async getMembersSymbolizedMemberArray(checker:TypeChecker) {
+    const members = this.getMembers();
+    const rtn = new SymbolizedMemberArray();
+    for(let member of members) { 
+      rtn.push( await member.getSymbolizedMember(checker, this.element ) )
+    }
+    return rtn;
+  }
+
 
   static IsAVariable(node:Node):node is VariableDeclaration {
     const otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
