@@ -1,4 +1,4 @@
-import { Identifier, Node, SyntaxKind, SourceFile, Token, ImportDeclaration } from 'typescript';
+import { Identifier, Node, SyntaxKind, SourceFile, Token, ImportDeclaration, DiagnosticCategory } from 'typescript';
 
 export function getInlineRangeFromPosition(namedElement:Identifier,  source:SourceFile = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
   const endPosition:Position = source.getLineAndCharacterOfPosition( namedElement.end ) 
@@ -14,7 +14,7 @@ export function createErrorDiagnostic(source:string, range:Range, message:string
     range,
     message,
     code,
-    severity: Severity.Error,
+    severity: DiagnosticCategory.Error,
     source,
   }
 }
@@ -55,6 +55,12 @@ export function find<T>(source: SourceFile, condition: (node: Node) => (T|undefi
 
 }
 
+
+export function extractImportsFromSource(source:SourceFile):ImportDeclaration[]|undefined {
+  const imports = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
+  return imports.map( imp => imp.parent as ImportDeclaration )
+}
+ 
 export function getImportFromSourceByModuleName(moduleName:string, source:SourceFile):ImportDeclaration|undefined {
   const importTokens = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
   for(let token of importTokens) {
@@ -68,14 +74,10 @@ export type Diagnostic = {
   range:Range,
   message:string,
   code?:string,
-  severity: Severity,
+  severity: DiagnosticCategory,
   source:string,
 }
 
-export enum Severity {
-  Warning,
-  Error,
-}
 
 export type Position = {
   line:number,

@@ -1,4 +1,4 @@
-import { ImportDeclaration, Identifier, Node, SyntaxKind, SourceFile } from 'typescript';
+import { ImportDeclaration, Identifier, Node, SyntaxKind, SourceFile, Token } from 'typescript';
 import { ImportResolver } from "./ImportResolver";
 import { find as _find } from "./utilities";
 
@@ -101,7 +101,7 @@ export class Import {
   /**
    * Locates and returns an imported object if found and undefined if not found.
    */
-  static findObject(name:string, imports:Import[]):ImportedObject|undefined {
+  static FindObject(name:string, imports:Import[]):ImportedObject|undefined {
     for(let imp of imports) {
       const members = imp.getImportedObjects()
       for(let member of members) {
@@ -117,6 +117,19 @@ export class Import {
     }
     return undefined;
   }
+
+  static FindImportByModuleName(name:string, imports:Import[]):Import|undefined {
+    for(let imp of imports) {
+      if( imp.moduleName.endsWith( name ) ) return imp;
+    }
+    return undefined;
+  }
+
+  static ExtractImportFromSource(source:SourceFile) {
+    const imports = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
+    return imports.map( imp => new Import( imp.parent as ImportDeclaration, source.fileName ) )
+  }
+
 
 
 }
