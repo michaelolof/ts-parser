@@ -124,7 +124,7 @@ var Import = (function () {
             });
         });
     };
-    Import.findObject = function (name, imports) {
+    Import.FindObject = function (name, imports) {
         for (var _i = 0, imports_2 = imports; _i < imports_2.length; _i++) {
             var imp = imports_2[_i];
             var members = imp.getImportedObjects();
@@ -143,6 +143,18 @@ var Import = (function () {
             }
         }
         return undefined;
+    };
+    Import.FindImportByModuleName = function (name, imports) {
+        for (var _i = 0, imports_3 = imports; _i < imports_3.length; _i++) {
+            var imp = imports_3[_i];
+            if (imp.moduleName.endsWith(name))
+                return imp;
+        }
+        return undefined;
+    };
+    Import.ExtractImportFromSource = function (source) {
+        var imports = source["imports"];
+        return imports.map(function (imp) { return new Import(imp.parent, source.fileName); });
     };
     return Import;
 }());

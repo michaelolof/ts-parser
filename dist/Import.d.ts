@@ -12,7 +12,9 @@ export declare class Import {
     static IsAImport(node: Node): node is ImportDeclaration;
     static FindModule(name: string, imports: Import[]): Import | undefined;
     static Find(source: SourceFile): Promise<Import[] | undefined>;
-    static findObject(name: string, imports: Import[]): ImportedObject | undefined;
+    static FindObject(name: string, imports: Import[]): ImportedObject | undefined;
+    static FindImportByModuleName(name: string, imports: Import[]): Import | undefined;
+    static ExtractImportFromSource(source: SourceFile): Import[];
 }
 export declare enum ImportFormat {
     Default = 0,

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var typescript_1 = require("typescript");
 function getInlineRangeFromPosition(namedElement, source, name) {
     if (source === void 0) { source = namedElement.getSourceFile(); }
     if (name === void 0) { name = namedElement.escapedText; }
@@ -16,7 +17,7 @@ function createErrorDiagnostic(source, range, message, code) {
         range: range,
         message: message,
         code: code,
-        severity: Severity.Error,
+        severity: typescript_1.DiagnosticCategory.Error,
         source: source,
     };
 }
@@ -57,6 +58,11 @@ function find(source, condition, deepFind) {
     return Promise.all(allPromises);
 }
 exports.find = find;
+function extractImportsFromSource(source) {
+    var imports = source["imports"];
+    return imports.map(function (imp) { return imp.parent; });
+}
+exports.extractImportsFromSource = extractImportsFromSource;
 function getImportFromSourceByModuleName(moduleName, source) {
     var importTokens = source["imports"];
     for (var _i = 0, importTokens_1 = importTokens; _i < importTokens_1.length; _i++) {
@@ -68,9 +74,4 @@ function getImportFromSourceByModuleName(moduleName, source) {
     return undefined;
 }
 exports.getImportFromSourceByModuleName = getImportFromSourceByModuleName;
-var Severity;
-(function (Severity) {
-    Severity[Severity["Warning"] = 0] = "Warning";
-    Severity[Severity["Error"] = 1] = "Error";
-})(Severity = exports.Severity || (exports.Severity = {}));
 //# sourceMappingURL=utilities.js.map
