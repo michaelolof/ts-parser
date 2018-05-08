@@ -59,7 +59,6 @@ export class Variable {
     return rtn;
   }
 
-
   static IsAVariable(node:Node):node is VariableDeclaration {
     const otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
     if( otherTruths ) {
