@@ -1,12 +1,13 @@
 import { Class } from '../src/Class';
 import { expect } from "chai";
 import { ClassMember } from '../src/Member';
-import { createMockSource } from "./index.test";
+import { createMockSource, program, mockFiles } from './index.test';
 import { SourceFile } from "typescript";
 
 describe("(class) => Class.ts", () => {
 
   let classOne:Class;
+  let classTwo:Class;
   let source:SourceFile
 
   before( async () => {
@@ -24,11 +25,25 @@ describe("(class) => Class.ts", () => {
         static Controller() {
           console.log("I control stuffs");
         }
+      }
+      
+      interface Mover {
+        move():void
+      }
+
+      interface Stayer {
+        stay():never
+      }
+
+      interface User extends Mover, Stayer {} 
+      class User {
+        
       }`;
     source = createMockSource( sourceText );
     const classes = await Class.Find( source );
     if( classes === undefined ) throw new Error("couldn't find a class declaration in " + sourceText );
     classOne = classes[ 0 ];
+    classTwo = (await Class.Find( program.getSourceFile( mockFiles.index ) ))![1];
   })
 
   describe("(property) => Class.name", () => {
@@ -66,6 +81,12 @@ describe("(class) => Class.ts", () => {
       const member = classOne.getMember("fieldTwo");
       expect(member).to.be.deep.equal(undefined);
     });
+  });
+
+  describe("(method) => Class.getMembersSymbol()", () => {
+    it("should", () => {
+      console.log( classTwo.element );
+    })
   });
 
   describe("(method) => Class.getMethods()", () => {

@@ -1,5 +1,6 @@
 import { Decorator as ts_Decorator, Identifier, Node, SyntaxKind, SourceFile } from 'typescript';
 import { find } from './utilities';
+import { Argument } from './Statement';
 
 
 export class Decorator {
@@ -25,15 +26,9 @@ export class Decorator {
    * Return an array of string if the decorator has arguments 
    * and an empty array if the decorator is doesn't have any arguments.
    */
-  getArguments():string[] {
-    const args:string[] = [];
+  getArguments() {
     const argsObj = this.decoratorElement.expression["arguments"] as Identifier[];
-    if( argsObj ) {
-      for( let argObj of argsObj ) {
-        args.push( argObj.escapedText as string );
-      }
-    }
-    return args;
+    return argsObj.map( arg => new Argument( arg, this.filePath ) );
   }
 
   static IsADecorator(node:Node):node is ts_Decorator {

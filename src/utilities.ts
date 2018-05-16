@@ -9,15 +9,18 @@ export function getInlineRangeFromPosition(namedElement:Identifier,  source:Sour
   } as Range
 }
 
-export function createErrorDiagnostic(source:string, range:Range, message:string, code?:string):Diagnostic {
+export function createErrorDiagnostic(source:string, filePath:string,  range:Range, message:string, code?:string):Diagnostic {
   return {
     range,
+    filePath,
     message,
     code,
     severity: DiagnosticCategory.Error,
     source,
   }
 }
+
+
 
 export function cleanUpFilePath(filePath:string) {
   if( filePath.startsWith("file:///") ) filePath = filePath.substr( 8 )
@@ -71,6 +74,7 @@ export function getImportFromSourceByModuleName(moduleName:string, source:Source
 }
 
 export type Diagnostic = {
+  filePath:string,
   range:Range,
   message:string,
   code?:string,

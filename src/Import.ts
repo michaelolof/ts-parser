@@ -161,6 +161,7 @@ export class ImportedObject {
     this.fromLocation = parentImport.resolvePath("ts")
   }
 
+  
   getAlias():string | Error {
     if( this.alias ) return this.alias
     else if( this.name ) return this.name;

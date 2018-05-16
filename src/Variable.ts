@@ -1,12 +1,12 @@
 import { getInlineRangeFromPosition, Range, find } from './utilities';
 import { VariableMember, Method } from './Member';
 import { VariableDeclaration, Identifier, Symbol, SourceFile, Node, isVariableDeclaration, SyntaxKind, TypeChecker } from 'typescript';
-import { SymbolizedMemberArray } from './Checker';
+import { SymbolizedMemberArray, SymbolizedHolder } from './Checker';
 
 export class Variable {
   
-  readonly element:VariableDeclaration;
-  readonly filePath:string;
+  element:VariableDeclaration;
+  filePath:string;
   private __members:VariableMember[] | undefined
 
   constructor(variable:VariableDeclaration, filePath:string) {
@@ -22,8 +22,8 @@ export class Variable {
     return this instanceof type;
   }
 
-  getNameRange():Range {
-    return getInlineRangeFromPosition( this.element.name as Identifier );
+  getNameRange(source?:SourceFile):Range {
+    return getInlineRangeFromPosition( this.element.name as Identifier, source );
   }
 
   /**
@@ -40,6 +40,18 @@ export class Variable {
     return this.__members;
   }
 
+  /**
+   * Returns a VariableMember instance if found and undefined if not found.
+   */
+  getMember(name:string) {
+    let members:VariableMember[]|undefined = this.__members;
+    if( members === undefined ) members = this.getMembers();
+    for(let member of members) {
+      if( member.name === name ) return member;
+    }
+    return undefined;
+  }
+
   getMethods() {
     const members = this.getMembers();
     return Method.getMethods( members );
@@ -48,6 +60,16 @@ export class Variable {
   getMembersSymbol():Map<string,Symbol> | undefined {
     if( this.element.initializer!["symbol"] === undefined ) return undefined;
     return this.element.initializer!["symbol"].members
+  }
+
+  async toSymbolizedHolder(type:"mixin" | "client", checker:TypeChecker) {
+    return new SymbolizedHolder(
+      this.name,
+      this.getNameRange(),
+      this.filePath,
+      type,
+      (await this.getMembersSymbolizedMemberArray(checker) ).array,
+    )
   }
 
   async getMembersSymbolizedMemberArray(checker:TypeChecker) {

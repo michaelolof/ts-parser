@@ -1,22 +1,19 @@
 import { ClassDeclaration, Symbol, TypeChecker, SourceFile, Node, SyntaxKind } from 'typescript';
-import { SymbolizedMemberArray } from './Checker';
+import { SymbolizedMemberArray, SymbolizedHolder } from './Checker';
 import { ClassMember, Method } from './Member';
-import { getInlineRangeFromPosition, Range } from './utilities';
+import { Range } from './utilities';
 import { find as _find } from "./utilities"
+import { Variable } from './Variable';
 
 export class Class {
   
   private __members:ClassMember[] | undefined;
   mixinNames?:string[];
 
-  constructor(public readonly element:ClassDeclaration, public readonly filePath:string) {}
+  constructor(public element:ClassDeclaration, public filePath:string) {}
 
   get name() {
-    return this.element.name!.escapedText as string
-  }
-
-  getNameRange(source?:SourceFile):Range {
-    return getInlineRangeFromPosition( this.element.name!, source );
+    return this.element.name!["escapedText"] as string
   }
 
   /**
@@ -34,35 +31,14 @@ export class Class {
     return this.__members;
   }
 
-  /**
-   * Returns a ClassMember instance if found and undefined if not found.
-   */
-  getMember(name:string) {
-    let members:ClassMember[]|undefined = this.__members;
-    if( members === undefined ) members = this.getMembers();
-    for(let member of members) {
-      if( member.name === name ) return member;
-    }
-    return undefined;
-  }
-
-  getMethods() {
-    const members = this.getMembers();
-    return Method.getMethods( members );
+  getAllMembers() {
+    console.log( this.element["localSymbol"]["exportSymbol"]["members"].keys() );
+    throw new Error("Just die");
   }
 
   getMembersSymbol():Map<string,Symbol>| undefined {
     if( this.element["symbol"] === undefined ) return undefined;
     return this.element["symbol"].members
-  }
-
-  async getMembersSymbolizedMemberArray(checker:TypeChecker) {
-    const members = this.getMembers();
-    const rtn = new SymbolizedMemberArray();
-    for(let member of members) { 
-      rtn.push( await member.getSymbolizedMember(checker, this.element ) )
-    }
-    return rtn;
   }
 
   /**
@@ -116,3 +92,18 @@ export class Class {
   
 }
 
+export interface Class {
+  getNameRange(source?:SourceFile):Range
+  getMethods():Method[]
+  getMember(name:string):ClassMember | undefined
+  toSymbolizedHolder(type:"mixin"|"client", checker:TypeChecker): Promise<SymbolizedHolder>
+  getMembersSymbolizedMemberArray(checker:TypeChecker):Promise<SymbolizedMemberArray>
+}
+
+//@ts-ignore
+// Class.prototype.name = Variable.prototype.name
+Class.prototype.getNameRange = Variable.prototype.getNameRange
+Class.prototype.getMethods = Variable.prototype.getMethods
+Class.prototype.getMember = Variable.prototype.getMember as any
+Class.prototype.toSymbolizedHolder = Variable.prototype.toSymbolizedHolder
+Class.prototype.getMembersSymbolizedMemberArray = Variable.prototype.getMembersSymbolizedMemberArray

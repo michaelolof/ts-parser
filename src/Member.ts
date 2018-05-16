@@ -62,7 +62,7 @@ export class Member {
   }
 
   getMethodBodyThisCalls() {
-    const methodBody = this.element["body"]
+    const methodBody = (this.element["body"] as Node).getFullText();
     const calls = ThisCall.Find( methodBody );
     return calls;
   }

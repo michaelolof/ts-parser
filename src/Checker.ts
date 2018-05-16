@@ -35,7 +35,7 @@ export class SymbolizedHolder {
 
 export class SymbolArray<T> {
 
-  protected array:T[]
+  array:T[]
 
   constructor(...symbol:T[]) {
     this.array = symbol;
@@ -63,7 +63,7 @@ export class SymbolArray<T> {
     return this.array.length;
   }
 
-  contains( member:T, condition:(arrVal:T, member:T) => boolean ) {
+  contains( member:T, condition:(thisMeber:T, member:T) => boolean ) {
     for(let m of this.array) {
       if( condition( m, member ) ) return true
     }
@@ -107,5 +107,14 @@ export class SymbolizedMember {
 export class SymbolizedMemberArray extends SymbolArray<SymbolizedMember> {
   doesntHaveMember(member:SymbolizedMember) {
     return this.array.filter( arrMember => arrMember.memberName !== member.memberName && arrMember.signature !== member.signature)
+  }
+  
+  hasThisCallMember(thisCall:ThisCall) {
+    for(let m of this.array) {
+      if( m.memberName === thisCall.name ) {
+        return true
+      }
+    }
+    return false;
   }
 }

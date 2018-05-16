@@ -1,110 +1,72 @@
-import { find } from ".";
-import { 
-  Node, SourceFile, SyntaxKind, CallExpression, isCallExpression, isPropertyAccessExpression, 
-  isExpressionStatement, ExpressionStatement } from "typescript";
+import { Method } from ".";
+import { Identifier, SourceFile } from "typescript";
+import { getInlineRangeFromPosition } from './utilities';
 
 export type ThisCallType = "property" | "method";
 export type ThisCallAccessor = "instance" | "static";
 
-export abstract class ThisCall {
+export class ThisCall {
 
-  element:CallExpression | ExpressionStatement;
-  code:string;
-  name:string;
-  abstract accessor:"static"|"instance";
-  abstract type:"method" | "property";
-  abstract inferSignature():number | "any";
+  private bracketStartingIndex:number
+  private codeWithoutThis:string
 
-
-  constructor(element:CallExpression | ExpressionStatement ) {
-    this.element = element;
-    this.name = (element.expression["name"].escapedText as string);
-    this.code = element.getFullText().trim();
+  constructor(public readonly code: string) {
   }
 
-  static Find(body:Node):Promise<ThisCall[] | undefined> {
-    const calls = find( body as SourceFile, condition );
-    return calls;
-    //--------------------------------------------------------
-    function condition(node:Node):ThisCall | undefined {
-      if( node.kind === SyntaxKind.ThisKeyword 
-          && node.parent 
-                    
-          && isPropertyAccessExpression( node.parent ) && node.parent.parent ) {
-            
-          if( node.parent.name.escapedText === "constructor" && node.parent.parent.parent ) {
-            if( isExpressionStatement( node.parent.parent.parent ) ) {
-              return new StaticPropertyThisCall( node.parent.parent.parent );
-            }
-            if( isCallExpression( node.parent.parent.parent ) ) {
-              return new StaticMethodThisCall( node.parent.parent.parent )
-            }
-          }
-          
-          if( isExpressionStatement( node.parent.parent ) ) {
-            return new IntsancePropertyThisCall( node.parent.parent );
-          }
-        
-          if( isCallExpression( node.parent.parent ) ) {
-            return new InstanceMethodThisCall( node.parent.parent );
-          }
-      }
-      return undefined;
+  get name() {
+    this.codeWithoutThis = this.code.substr(5);
+    if( this.type === "method" ) {
+      this.bracketStartingIndex = this.codeWithoutThis.indexOf("(");
+      const methodName = this.codeWithoutThis.substring( 0, this.bracketStartingIndex );
+      return methodName;
+    } else return this.codeWithoutThis;
+  }
+
+  get type():ThisCallType {
+    if (Method.isStringAMethod(this.code)) return "method"
+    else return "property";
+  }
+
+  get codeFormat() {
+    if( this.type === "property" ) return this.code
+    else return "this." + this.name + "(...)"
+  }
+
+  static Find(source: string):ThisCall[] {
+    const rgx = {
+      instanceMember: /this.(?!.*constructor)[\w]+([\s]+)?(\(([\s\w\"\'\`\!\*\,\.\@\%\^\&\|\,\_]+)?\))?/g,
+      staticMember: /this.constructor.[\w]+(\(([\s\w\,\.\_]+)?\))?/g,
     }
+
+    const calls: ThisCall[] = [];
+    const instancePropertiesAndMethods = source.match(rgx.instanceMember);
+    const staticPropertiesAndMethods = source.match(rgx.staticMember);
+
+    if (instancePropertiesAndMethods) {
+      for (let prop of instancePropertiesAndMethods) {
+        calls.push(new ThisCall(prop));
+      }
+    }
+
+    if (staticPropertiesAndMethods) {
+      for (let prop of staticPropertiesAndMethods) {
+        calls.push(new ThisCall(prop));
+      }
+    }
+
+    return calls;   
   }
 
 }
 
-export abstract class MethodThisCall extends ThisCall {
-  abstract accessor:"static" | "instance"
-  type: "method";
-  constructor( public element:CallExpression ) {
-    super( element );
-    this.type = "method";
+export class Argument {
+  constructor(public element:Identifier, public filePath:string) {}
+  get name() {
+    return (
+      this.element.escapedText || this.element["name"].escapedText
+    ) as string
   }
-
-  inferSignature():number {
-    return this.element.arguments.length;
-  }
-}
-
-export abstract class PropertyThisCall extends ThisCall {
-  abstract accessor:"static" | "instance"
-  type: "property";
-  constructor(public element:ExpressionStatement) {
-    super( element );
-    this.type = "property"
-  }
-  inferSignature():"any" {
-    return "any"
+  getNameRange(source?:SourceFile) {
+    return getInlineRangeFromPosition( this.element, source )
   }
 }
-
-export class InstanceMethodThisCall extends MethodThisCall {  
-  accessor:"instance" = "instance";
-  constructor(element:CallExpression) {
-    super( element );
-  }
-} 
-
-export class StaticMethodThisCall extends MethodThisCall {
-  accessor:"static" = "static";
-  constructor(public element:CallExpression) {
-    super( element);
-  }
-}
-
-export class IntsancePropertyThisCall extends PropertyThisCall {
-  accessor:"instance" = "instance"
-  constructor(public element:ExpressionStatement) {
-    super( element );
-  }
-}
-
-export class StaticPropertyThisCall extends PropertyThisCall {
-  accessor:"static" = "static"
-  constructor(public element:ExpressionStatement) {
-    super( element );
-  }
-}
-
