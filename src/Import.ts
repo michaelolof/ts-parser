@@ -1,4 +1,4 @@
-import { ImportDeclaration, Identifier, Node, SyntaxKind, SourceFile, Token } from 'typescript';
+import { ImportDeclaration, Identifier, Node, SyntaxKind, SourceFile, Token, isImportDeclaration } from 'typescript';
 import { ImportResolver } from "./ImportResolver";
 import { find as _find } from "./utilities";
 
@@ -13,6 +13,7 @@ export class Import {
   constructor(importDeclaration:ImportDeclaration, filePath:string) {
     this.filePath = filePath;
     this.importDeclaration = importDeclaration;
+    if( this.importDeclaration.moduleSpecifier === undefined ) console.log( importDeclaration.kind );
     this.moduleDeclaration = this.importDeclaration.moduleSpecifier["text"] as string;
     const moduleNameArr = this.moduleDeclaration.split("/");
     this.moduleName = moduleNameArr[ moduleNameArr.length - 1 ];
@@ -126,8 +127,14 @@ export class Import {
   }
 
   static ExtractImportFromSource(source:SourceFile) {
+    const imps:Import[] = [];
     const imports = source["imports"] as Token<SyntaxKind.ImportDeclaration>[];
-    return imports.map( imp => new Import( imp.parent as ImportDeclaration, source.fileName ) )
+    for(let imp of imports ) {
+      if( imp.parent && isImportDeclaration( imp.parent ) ) {
+        imps.push( new Import( imp.parent, source.fileName ) )
+      }
+    }
+    return imps;
   }
 
 

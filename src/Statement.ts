@@ -18,8 +18,8 @@ export class ThisCall {
     if( this.type === "method" ) {
       this.bracketStartingIndex = this.codeWithoutThis.indexOf("(");
       const methodName = this.codeWithoutThis.substring( 0, this.bracketStartingIndex );
-      return methodName;
-    } else return this.codeWithoutThis;
+      return methodName.trim();
+    } else return this.codeWithoutThis.trim();
   }
 
   get type():ThisCallType {
@@ -33,17 +33,22 @@ export class ThisCall {
   }
 
   static Find(source: string):ThisCall[] {
+    // const rgx = {
+    //   instanceMember: /this\.(?!.*constructor)[\w]+([\s]+)?(\(([\s\w\"\'\`\!\*\,\.\@\%\^\&\|\,\_]+)?\))?/g,
+    //   staticMember: /this\.constructor.[\w]+(\(([\s\w\,\.\_]+)?\))?/g,
+    // }
+    
     const rgx = {
-      instanceMember: /this.(?!.*constructor)[\w]+([\s]+)?(\(([\s\w\"\'\`\!\*\,\.\@\%\^\&\|\,\_]+)?\))?/g,
-      staticMember: /this.constructor.[\w]+(\(([\s\w\,\.\_]+)?\))?/g,
+      instanceMember: /this(\s)?\.(?!.*constructor)[\w]+/g,
+      staticMember: /this(\s)?\.constructor(\s)?\.[\w]+/g
     }
 
     const calls: ThisCall[] = [];
-    const instancePropertiesAndMethods = source.match(rgx.instanceMember);
-    const staticPropertiesAndMethods = source.match(rgx.staticMember);
+    const instancePropertiesAndMethods = Array.from( new Set( source.match(rgx.instanceMember) || [] ) );
+    const staticPropertiesAndMethods = Array.from( new Set( source.match(rgx.staticMember) || [] ) );
 
-    if (instancePropertiesAndMethods) {
-      for (let prop of instancePropertiesAndMethods) {
+    if (instancePropertiesAndMethods) { 
+      for (let prop of instancePropertiesAndMethods ) {
         calls.push(new ThisCall(prop));
       }
     }
