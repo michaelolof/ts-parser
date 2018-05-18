@@ -1,120 +1,86 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var _1 = require(".");
-var typescript_1 = require("typescript");
+var utilities_1 = require("./utilities");
 var ThisCall = (function () {
-    function ThisCall(element) {
-        this.element = element;
-        this.name = element.expression["name"].escapedText;
-        this.code = element.getFullText().trim();
+    function ThisCall(code) {
+        this.code = code;
     }
-    ThisCall.Find = function (body) {
-        var calls = _1.find(body, condition);
-        return calls;
-        function condition(node) {
-            if (node.kind === typescript_1.SyntaxKind.ThisKeyword
-                && node.parent
-                && typescript_1.isPropertyAccessExpression(node.parent) && node.parent.parent) {
-                if (node.parent.name.escapedText === "constructor" && node.parent.parent.parent) {
-                    if (typescript_1.isExpressionStatement(node.parent.parent.parent)) {
-                        return new StaticPropertyThisCall(node.parent.parent.parent);
-                    }
-                    if (typescript_1.isCallExpression(node.parent.parent.parent)) {
-                        return new StaticMethodThisCall(node.parent.parent.parent);
-                    }
-                }
-                if (typescript_1.isExpressionStatement(node.parent.parent)) {
-                    return new IntsancePropertyThisCall(node.parent.parent);
-                }
-                if (typescript_1.isCallExpression(node.parent.parent)) {
-                    return new InstanceMethodThisCall(node.parent.parent);
-                }
+    Object.defineProperty(ThisCall.prototype, "name", {
+        get: function () {
+            this.codeWithoutThis = this.code.substr(5);
+            if (this.type === "method") {
+                this.bracketStartingIndex = this.codeWithoutThis.indexOf("(");
+                var methodName = this.codeWithoutThis.substring(0, this.bracketStartingIndex);
+                return methodName.trim();
             }
-            return undefined;
+            else
+                return this.codeWithoutThis.trim();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ThisCall.prototype, "type", {
+        get: function () {
+            if (_1.Method.isStringAMethod(this.code))
+                return "method";
+            else
+                return "property";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ThisCall.prototype, "codeFormat", {
+        get: function () {
+            if (this.type === "property")
+                return this.code;
+            else
+                return "this." + this.name + "(...)";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ThisCall.Find = function (source) {
+        var rgx = {
+            instanceMember: /this(\s)?\.(?!.*constructor)[\w]+/g,
+            staticMember: /this(\s)?\.constructor(\s)?\.[\w]+/g
+        };
+        var calls = [];
+        var instancePropertiesAndMethods = Array.from(new Set(source.match(rgx.instanceMember) || []));
+        var staticPropertiesAndMethods = Array.from(new Set(source.match(rgx.staticMember) || []));
+        if (instancePropertiesAndMethods) {
+            for (var _i = 0, instancePropertiesAndMethods_1 = instancePropertiesAndMethods; _i < instancePropertiesAndMethods_1.length; _i++) {
+                var prop = instancePropertiesAndMethods_1[_i];
+                calls.push(new ThisCall(prop));
+            }
         }
+        if (staticPropertiesAndMethods) {
+            for (var _a = 0, staticPropertiesAndMethods_1 = staticPropertiesAndMethods; _a < staticPropertiesAndMethods_1.length; _a++) {
+                var prop = staticPropertiesAndMethods_1[_a];
+                calls.push(new ThisCall(prop));
+            }
+        }
+        return calls;
     };
     return ThisCall;
 }());
 exports.ThisCall = ThisCall;
-var MethodThisCall = (function (_super) {
-    __extends(MethodThisCall, _super);
-    function MethodThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.element = element;
-        _this.type = "method";
-        return _this;
+var Argument = (function () {
+    function Argument(element, filePath) {
+        this.element = element;
+        this.filePath = filePath;
     }
-    MethodThisCall.prototype.inferSignature = function () {
-        return this.element.arguments.length;
+    Object.defineProperty(Argument.prototype, "name", {
+        get: function () {
+            return (this.element.escapedText || this.element["name"].escapedText);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Argument.prototype.getNameRange = function (source) {
+        return utilities_1.getInlineRangeFromPosition(this.element, source);
     };
-    return MethodThisCall;
-}(ThisCall));
-exports.MethodThisCall = MethodThisCall;
-var PropertyThisCall = (function (_super) {
-    __extends(PropertyThisCall, _super);
-    function PropertyThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.element = element;
-        _this.type = "property";
-        return _this;
-    }
-    PropertyThisCall.prototype.inferSignature = function () {
-        return "any";
-    };
-    return PropertyThisCall;
-}(ThisCall));
-exports.PropertyThisCall = PropertyThisCall;
-var InstanceMethodThisCall = (function (_super) {
-    __extends(InstanceMethodThisCall, _super);
-    function InstanceMethodThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.accessor = "instance";
-        return _this;
-    }
-    return InstanceMethodThisCall;
-}(MethodThisCall));
-exports.InstanceMethodThisCall = InstanceMethodThisCall;
-var StaticMethodThisCall = (function (_super) {
-    __extends(StaticMethodThisCall, _super);
-    function StaticMethodThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.element = element;
-        _this.accessor = "static";
-        return _this;
-    }
-    return StaticMethodThisCall;
-}(MethodThisCall));
-exports.StaticMethodThisCall = StaticMethodThisCall;
-var IntsancePropertyThisCall = (function (_super) {
-    __extends(IntsancePropertyThisCall, _super);
-    function IntsancePropertyThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.element = element;
-        _this.accessor = "instance";
-        return _this;
-    }
-    return IntsancePropertyThisCall;
-}(PropertyThisCall));
-exports.IntsancePropertyThisCall = IntsancePropertyThisCall;
-var StaticPropertyThisCall = (function (_super) {
-    __extends(StaticPropertyThisCall, _super);
-    function StaticPropertyThisCall(element) {
-        var _this = _super.call(this, element) || this;
-        _this.element = element;
-        _this.accessor = "static";
-        return _this;
-    }
-    return StaticPropertyThisCall;
-}(PropertyThisCall));
-exports.StaticPropertyThisCall = StaticPropertyThisCall;
+    return Argument;
+}());
+exports.Argument = Argument;
 //# sourceMappingURL=Statement.js.map

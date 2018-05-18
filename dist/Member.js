@@ -112,7 +112,7 @@ var Member = (function () {
         return utilities_1.getInlineRangeFromPosition(this.element["name"]);
     };
     Member.prototype.getMethodBodyThisCalls = function () {
-        var methodBody = this.element["body"];
+        var methodBody = this.element["body"].getFullText();
         var calls = Statement_1.ThisCall.Find(methodBody);
         return calls;
     };

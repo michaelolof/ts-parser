@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var typescript_1 = require("typescript");
 var utilities_1 = require("./utilities");
+var Statement_1 = require("./Statement");
 var Decorator = (function () {
     function Decorator(decoratorElement, filePath) {
         this.decoratorElement = decoratorElement;
@@ -23,15 +24,9 @@ var Decorator = (function () {
         configurable: true
     });
     Decorator.prototype.getArguments = function () {
-        var args = [];
+        var _this = this;
         var argsObj = this.decoratorElement.expression["arguments"];
-        if (argsObj) {
-            for (var _i = 0, argsObj_1 = argsObj; _i < argsObj_1.length; _i++) {
-                var argObj = argsObj_1[_i];
-                args.push(argObj.escapedText);
-            }
-        }
-        return args;
+        return argsObj.map(function (arg) { return new Statement_1.Argument(arg, _this.filePath); });
     };
     Decorator.IsADecorator = function (node) {
         return node.kind === typescript_1.SyntaxKind.Decorator;

@@ -36,10 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var typescript_1 = require("typescript");
-var Checker_1 = require("./Checker");
 var Member_1 = require("./Member");
 var utilities_1 = require("./utilities");
-var utilities_2 = require("./utilities");
+var Variable_1 = require("./Variable");
 var Class = (function () {
     function Class(element, filePath) {
         this.element = element;
@@ -47,14 +46,11 @@ var Class = (function () {
     }
     Object.defineProperty(Class.prototype, "name", {
         get: function () {
-            return this.element.name.escapedText;
+            return this.element.name["escapedText"];
         },
         enumerable: true,
         configurable: true
     });
-    Class.prototype.getNameRange = function (source) {
-        return utilities_1.getInlineRangeFromPosition(this.element.name, source);
-    };
     Class.prototype.getMembers = function () {
         if (this.__members)
             return this.__members;
@@ -67,57 +63,20 @@ var Class = (function () {
         }
         return this.__members;
     };
-    Class.prototype.getMember = function (name) {
-        var members = this.__members;
-        if (members === undefined)
-            members = this.getMembers();
-        for (var _i = 0, members_1 = members; _i < members_1.length; _i++) {
-            var member = members_1[_i];
-            if (member.name === name)
-                return member;
-        }
-        return undefined;
-    };
-    Class.prototype.getMethods = function () {
-        var members = this.getMembers();
-        return Member_1.Method.getMethods(members);
+    Class.prototype.getAllMembers = function () {
+        console.log(this.element["localSymbol"]["exportSymbol"]["members"].keys());
+        throw new Error("Just die");
     };
     Class.prototype.getMembersSymbol = function () {
         if (this.element["symbol"] === undefined)
             return undefined;
         return this.element["symbol"].members;
     };
-    Class.prototype.getMembersSymbolizedMemberArray = function (checker) {
-        return __awaiter(this, void 0, void 0, function () {
-            var members, rtn, _i, members_2, member, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        members = this.getMembers();
-                        rtn = new Checker_1.SymbolizedMemberArray();
-                        _i = 0, members_2 = members;
-                        _c.label = 1;
-                    case 1:
-                        if (!(_i < members_2.length)) return [3, 4];
-                        member = members_2[_i];
-                        _b = (_a = rtn).push;
-                        return [4, member.getSymbolizedMember(checker, this.element)];
-                    case 2:
-                        _b.apply(_a, [_c.sent()]);
-                        _c.label = 3;
-                    case 3:
-                        _i++;
-                        return [3, 1];
-                    case 4: return [2, rtn];
-                }
-            });
-        });
-    };
     Class.prototype.hasMembersUsingDecorator = function (decoratorName) {
         var members = this.getMembers();
         var membersUsingDecorators = [];
-        for (var _i = 0, members_3 = members; _i < members_3.length; _i++) {
-            var member = members_3[_i];
+        for (var _i = 0, members_1 = members; _i < members_1.length; _i++) {
+            var member = members_1[_i];
             if (member.isUsingDecorator(decoratorName)) {
                 membersUsingDecorators.push(member);
             }
@@ -138,8 +97,8 @@ var Class = (function () {
     };
     Class.prototype.hasMemberByNameAndAccessor = function (name, accessor) {
         var members = this.getMembers();
-        for (var _i = 0, members_4 = members; _i < members_4.length; _i++) {
-            var member = members_4[_i];
+        for (var _i = 0, members_2 = members; _i < members_2.length; _i++) {
+            var member = members_2[_i];
             if (member.name === name && member.getAccessor() === accessor)
                 return member;
         }
@@ -151,7 +110,7 @@ var Class = (function () {
     Class.Find = function (source) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2, utilities_2.find(source, function (node) {
+                return [2, utilities_1.find(source, function (node) {
                         if (Class.IsAClass(node)) {
                             return new Class(node, source.fileName);
                         }
@@ -164,4 +123,9 @@ var Class = (function () {
     return Class;
 }());
 exports.Class = Class;
+Class.prototype.getNameRange = Variable_1.Variable.prototype.getNameRange;
+Class.prototype.getMethods = Variable_1.Variable.prototype.getMethods;
+Class.prototype.getMember = Variable_1.Variable.prototype.getMember;
+Class.prototype.toSymbolizedHolder = Variable_1.Variable.prototype.toSymbolizedHolder;
+Class.prototype.getMembersSymbolizedMemberArray = Variable_1.Variable.prototype.getMembersSymbolizedMemberArray;
 //# sourceMappingURL=Class.js.map

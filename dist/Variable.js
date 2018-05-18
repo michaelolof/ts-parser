@@ -54,8 +54,8 @@ var Variable = (function () {
     Variable.prototype.isOf = function (type) {
         return this instanceof type;
     };
-    Variable.prototype.getNameRange = function () {
-        return utilities_1.getInlineRangeFromPosition(this.element.name);
+    Variable.prototype.getNameRange = function (source) {
+        return utilities_1.getInlineRangeFromPosition(this.element.name, source);
     };
     Variable.prototype.getMembers = function () {
         if (this.__members)
@@ -69,6 +69,17 @@ var Variable = (function () {
         }
         return this.__members;
     };
+    Variable.prototype.getMember = function (name) {
+        var members = this.__members;
+        if (members === undefined)
+            members = this.getMembers();
+        for (var _i = 0, members_1 = members; _i < members_1.length; _i++) {
+            var member = members_1[_i];
+            if (member.name === name)
+                return member;
+        }
+        return undefined;
+    };
     Variable.prototype.getMethods = function () {
         var members = this.getMembers();
         return Member_1.Method.getMethods(members);
@@ -78,19 +89,36 @@ var Variable = (function () {
             return undefined;
         return this.element.initializer["symbol"].members;
     };
+    Variable.prototype.toSymbolizedHolder = function (type, checker) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = Checker_1.SymbolizedHolder.bind;
+                        _b = [void 0, this.name,
+                            this.getNameRange(),
+                            this.filePath,
+                            type];
+                        return [4, this.getMembersSymbolizedMemberArray(checker)];
+                    case 1: return [2, new (_a.apply(Checker_1.SymbolizedHolder, _b.concat([(_c.sent()).array])))()];
+                }
+            });
+        });
+    };
     Variable.prototype.getMembersSymbolizedMemberArray = function (checker) {
         return __awaiter(this, void 0, void 0, function () {
-            var members, rtn, _i, members_1, member, _a, _b;
+            var members, rtn, _i, members_2, member, _a, _b;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         members = this.getMembers();
                         rtn = new Checker_1.SymbolizedMemberArray();
-                        _i = 0, members_1 = members;
+                        _i = 0, members_2 = members;
                         _c.label = 1;
                     case 1:
-                        if (!(_i < members_1.length)) return [3, 4];
-                        member = members_1[_i];
+                        if (!(_i < members_2.length)) return [3, 4];
+                        member = members_2[_i];
                         _b = (_a = rtn).push;
                         return [4, member.getSymbolizedMember(checker, this.element)];
                     case 2:

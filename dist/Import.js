@@ -42,6 +42,8 @@ var Import = (function () {
     function Import(importDeclaration, filePath) {
         this.filePath = filePath;
         this.importDeclaration = importDeclaration;
+        if (this.importDeclaration.moduleSpecifier === undefined)
+            console.log(importDeclaration.kind);
         this.moduleDeclaration = this.importDeclaration.moduleSpecifier["text"];
         var moduleNameArr = this.moduleDeclaration.split("/");
         this.moduleName = moduleNameArr[moduleNameArr.length - 1];
@@ -78,18 +80,18 @@ var Import = (function () {
         for (var _i = 0, namedBindingsElements_1 = namedBindingsElements; _i < namedBindingsElements_1.length; _i++) {
             var namedBindingsElement = namedBindingsElements_1[_i];
             var propertyName = namedBindingsElement["propertyName"];
-            var name = namedBindingsElement["name"];
+            var name_1 = namedBindingsElement["name"];
             var memberName = void 0, memberAlias = void 0;
             if (this.__format === ImportFormat.Namespaced) {
                 memberName = undefined;
-                memberAlias = name.escapedText;
+                memberAlias = name_1.escapedText;
             }
-            else if (propertyName && name) {
+            else if (propertyName && name_1) {
                 memberName = propertyName.escapedText;
-                memberAlias = name.escapedText;
+                memberAlias = name_1.escapedText;
             }
-            else if (name) {
-                memberName = name.escapedText;
+            else if (name_1) {
+                memberName = name_1.escapedText;
                 memberAlias = undefined;
             }
             var importMember = new ImportedObject(this, memberName, memberAlias);
@@ -153,8 +155,15 @@ var Import = (function () {
         return undefined;
     };
     Import.ExtractImportFromSource = function (source) {
+        var imps = [];
         var imports = source["imports"];
-        return imports.map(function (imp) { return new Import(imp.parent, source.fileName); });
+        for (var _i = 0, imports_4 = imports; _i < imports_4.length; _i++) {
+            var imp = imports_4[_i];
+            if (imp.parent && typescript_1.isImportDeclaration(imp.parent)) {
+                imps.push(new Import(imp.parent, source.fileName));
+            }
+        }
+        return imps;
     };
     return Import;
 }());

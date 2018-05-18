@@ -176,6 +176,15 @@ var SymbolizedMemberArray = (function (_super) {
     SymbolizedMemberArray.prototype.doesntHaveMember = function (member) {
         return this.array.filter(function (arrMember) { return arrMember.memberName !== member.memberName && arrMember.signature !== member.signature; });
     };
+    SymbolizedMemberArray.prototype.hasThisCallMember = function (thisCall) {
+        for (var _i = 0, _a = this.array; _i < _a.length; _i++) {
+            var m = _a[_i];
+            if (m.memberName === thisCall.name) {
+                return true;
+            }
+        }
+        return false;
+    };
     return SymbolizedMemberArray;
 }(SymbolArray));
 exports.SymbolizedMemberArray = SymbolizedMemberArray;

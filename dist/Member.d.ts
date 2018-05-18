@@ -13,7 +13,7 @@ export declare class Member {
     getSymbolizedMember(checker: TypeChecker, node?: Node): Promise<SymbolizedMember>;
     getAccessor(): "static" | "instance";
     getNameRange(): Range;
-    getMethodBodyThisCalls(): Promise<ThisCall[] | undefined>;
+    getMethodBodyThisCalls(): ThisCall[];
     getMethodNumberOfArguments(): number;
 }
 export declare class ClassMember extends Member {

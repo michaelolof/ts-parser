@@ -12,14 +12,14 @@ export declare class SymbolizedHolder {
     getMemberMethods(): SymbolizedMemberArray;
 }
 export declare class SymbolArray<T> {
-    protected array: T[];
+    array: T[];
     constructor(...symbol: T[]);
     [Symbol.iterator](): IterableIterator<T>;
     push(...symbol: T[]): void;
     forEach(calback: (value: T, index: number) => void): void;
     [Symbol.toStringTag](): IterableIterator<string>;
     readonly length: number;
-    contains(member: T, condition: (arrVal: T, member: T) => boolean): boolean;
+    contains(member: T, condition: (thisMeber: T, member: T) => boolean): boolean;
 }
 export declare class SymbolizedHolderArray extends SymbolArray<SymbolizedHolder> {
     findClients(): SymbolizedHolderArray;
@@ -37,4 +37,5 @@ export declare class SymbolizedMember {
 }
 export declare class SymbolizedMemberArray extends SymbolArray<SymbolizedMember> {
     doesntHaveMember(member: SymbolizedMember): SymbolizedMember[];
+    hasThisCallMember(thisCall: ThisCall): boolean;
 }

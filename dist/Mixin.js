@@ -16,6 +16,32 @@ exports.Mixin = {
             else
                 return undefined;
         });
+    },
+    FindWhere: function (source, whereCondition) {
+        var mixin = undefined;
+        utilities_1.find(source, function (node) {
+            if (Class_1.Class.IsAClass(node)) {
+                var cls = new Class_1.Class(node, source.fileName);
+                if (whereCondition(cls)) {
+                    mixin = cls;
+                    return cls;
+                }
+                else
+                    return undefined;
+            }
+            else if (Variable_1.Variable.IsAVariable(node)) {
+                var variable = new Variable_1.Variable(node, source.fileName);
+                if (whereCondition(variable)) {
+                    mixin = variable;
+                    return mixin;
+                }
+                else
+                    return undefined;
+            }
+            else
+                return undefined;
+        });
+        return mixin;
     }
 };
 //# sourceMappingURL=Mixin.js.map

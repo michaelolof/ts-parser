@@ -12,9 +12,10 @@ function getInlineRangeFromPosition(namedElement, source, name) {
     };
 }
 exports.getInlineRangeFromPosition = getInlineRangeFromPosition;
-function createErrorDiagnostic(source, range, message, code) {
+function createErrorDiagnostic(source, filePath, range, message, code) {
     return {
         range: range,
+        filePath: filePath,
         message: message,
         code: code,
         severity: typescript_1.DiagnosticCategory.Error,
