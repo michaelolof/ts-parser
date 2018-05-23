@@ -17,7 +17,7 @@ export class Class {
   }
 
   /**
-   * Returns an array of ClassMembers if found and undefined if not found.
+   * Returns an array of ClassMembers minus constructor if found and undefined if not found.
    */
   getMembers() {
     if( this.__members ) return this.__members;
@@ -26,14 +26,10 @@ export class Class {
     this.__members = [];
     for( let memberElement of memberElements ) {
       const member = new ClassMember( memberElement, this.filePath );
+      if( member.name === "constructor" ) continue;
       this.__members.push( member );
     }
     return this.__members;
-  }
-
-  getAllMembers() {
-    console.log( this.element["localSymbol"]["exportSymbol"]["members"].keys() );
-    throw new Error("Just die");
   }
 
   getMembersSymbol():Map<string,Symbol>| undefined {
