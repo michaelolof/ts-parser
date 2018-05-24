@@ -49,9 +49,12 @@ export class Class {
     }
     return classMembers;    
   }
-  
+
+  /**
+   * @deprecated
+   */
   //@ts-ignore
-  _getInterfaceMembers(checker?:TypeChecker) {
+  private _getInterfaceMembers(checker?:TypeChecker) {
     const members = this.element["symbol"].members as Map<string, Symbol>
     members.delete( "__constructor" );
     const classMembers:ClassMember[] = [];
@@ -105,6 +108,16 @@ export class Class {
     return undefined;
   }
 
+  async getMembersSymbolizedMemberArray(checker:TypeChecker):Promise<SymbolizedMemberArray> {
+    const members = this.getInterfaceMembers(checker);
+    const rtn = new SymbolizedMemberArray();
+    for(let member of members) { 
+      rtn.push( await member.getSymbolizedMember(checker, this.element ) )
+    }
+    return rtn;
+  }
+  
+
   static IsAClass(node:Node): node is ClassDeclaration {
     return node.kind === SyntaxKind.ClassDeclaration;
   }
@@ -128,7 +141,6 @@ export interface Class {
   getMethods():Method[]
   getMember(name:string):ClassMember | undefined
   toSymbolizedHolder(type:"mixin"|"client", checker:TypeChecker): Promise<SymbolizedHolder>
-  getMembersSymbolizedMemberArray(checker:TypeChecker):Promise<SymbolizedMemberArray>
 }
 
 //@ts-ignore
@@ -137,4 +149,3 @@ Class.prototype.getNameRange = Variable.prototype.getNameRange
 Class.prototype.getMethods = Variable.prototype.getMethods
 Class.prototype.getMember = Variable.prototype.getMember as any
 Class.prototype.toSymbolizedHolder = Variable.prototype.toSymbolizedHolder
-Class.prototype.getMembersSymbolizedMemberArray = Variable.prototype.getMembersSymbolizedMemberArray

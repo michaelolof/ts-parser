@@ -44,7 +44,7 @@ describe("(class) => Class.ts", () => {
     const classes = await Class.Find( source );
     if( classes === undefined ) throw new Error("couldn't find a class declaration in " + sourceText );
     classOne = classes[ 0 ];
-    mockClasses = await Class.Find( program.getSourceFile( mockFiles.index ) );
+    mockClasses = await Class.Find( program.getSourceFile( mockFiles.class ) );
     classTwo = mockClasses[0];
   })
 

@@ -6,8 +6,8 @@ export function createMockSource(sourceText:string):SourceFile {
 
 
 export const mockFiles = {
-  index:`C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\index.mock.ts`,
-  interfaceClassMember: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\interfaceClassMember.mock.ts",
+  class:`C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Class.mock.ts`,
+  interfaceClassMember: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\InterfaceClassMember.mock.ts",
 }
 
 const objectValues = (obj:object) => Object.keys( obj ).map( key => mockFiles[ key ]) as string[];
