@@ -93,14 +93,21 @@ describe("(class) => Class.ts", () => {
     })
   })
 
-  describe("(method) => Class.getMembersSymbol()", () => {  });
+  describe("(method) => Class.getMembersSymbolizedMemberArray(TypeChecker)", () => {
+    it("should return an array of 2 members", async () => {
+      const cls = mockClasses[ 3 ];
+      const arr = await cls.getMembersSymbolizedMemberArray( program.getTypeChecker() );
+      expect( arr.length ).to.deep.equal( 2 );
+      expect( arr.array[0].memberName ).to.be.deep.equal( "name" );
+      expect( arr.array[1].memberName ).to.be.deep.equal( "shop" );
+    });
+  });
 
   describe("(method) => Class.getMethods()", () => {
     it("should return an array of 1 member", () => {
       expect( classOne.getMethods().length ).to.be.deep.equal( 2 );
     })
   })
-
 
   describe("(method) => Class.hasMemberUsingDecorator()", () => {
     it("should return an array of class members", () => {

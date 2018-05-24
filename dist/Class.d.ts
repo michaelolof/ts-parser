@@ -11,12 +11,13 @@ export declare class Class {
     readonly name: string;
     getMembers(): ClassMember[];
     getInterfaceMembers(checker?: TypeChecker): InterfaceClassMember[];
-    _getInterfaceMembers(checker?: TypeChecker): ClassMember[];
+    private _getInterfaceMembers(checker?);
     getMembersSymbol(): Map<string, Symbol> | undefined;
     hasMembersUsingDecorator(decoratorName: string): ClassMember[];
     getMemberUsingDecorator(decoratorName: string, memberName: string): ClassMember | undefined;
     isOf(type: any): this is Class;
     hasMemberByNameAndAccessor(name: string, accessor: "static" | "instance"): ClassMember | undefined;
+    getMembersSymbolizedMemberArray(checker: TypeChecker): Promise<SymbolizedMemberArray>;
     static IsAClass(node: Node): node is ClassDeclaration;
     static Find(source: SourceFile): Promise<Class[] | undefined>;
 }
@@ -25,5 +26,4 @@ export interface Class {
     getMethods(): Method[];
     getMember(name: string): ClassMember | undefined;
     toSymbolizedHolder(type: "mixin" | "client", checker: TypeChecker): Promise<SymbolizedHolder>;
-    getMembersSymbolizedMemberArray(checker: TypeChecker): Promise<SymbolizedMemberArray>;
 }

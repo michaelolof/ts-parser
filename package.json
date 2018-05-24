@@ -1,6 +1,6 @@
 {
   "name": "ts-parser",
-  "version": "1.0.12",
+  "version": "1.0.15",
   "description": "A module that provides wrapper classes for typescript syntax",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
