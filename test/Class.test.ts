@@ -9,6 +9,7 @@ describe("(class) => Class.ts", () => {
   let classOne:Class;
   let classTwo:Class;
   let source:SourceFile
+  let mockClasses:Class[];
 
   before( async () => {
     const sourceText = `
@@ -43,7 +44,8 @@ describe("(class) => Class.ts", () => {
     const classes = await Class.Find( source );
     if( classes === undefined ) throw new Error("couldn't find a class declaration in " + sourceText );
     classOne = classes[ 0 ];
-    classTwo = (await Class.Find( program.getSourceFile( mockFiles.index ) ))![1];
+    mockClasses = await Class.Find( program.getSourceFile( mockFiles.index ) );
+    classTwo = mockClasses[0];
   })
 
   describe("(property) => Class.name", () => {
@@ -66,8 +68,8 @@ describe("(class) => Class.ts", () => {
   });
 
   describe("(method) => Class.getMembers()", () => {
-    it("should return an array of 6 members", () => {
-      expect(classOne.getMembers().length).to.be.deep.equal(5);
+    it("should return an array of 4 members", () => {
+      expect(classOne.getMembers().length).to.be.deep.equal(4);
     })
   })
 
@@ -83,17 +85,22 @@ describe("(class) => Class.ts", () => {
     });
   });
 
-  describe("(method) => Class.getMembersSymbol()", () => {
-    it("should", () => {
-      console.log( classTwo.element );
+  describe("(method) => Class.getInterfaceMembers()", () => {
+    it("should return an array of 3 members", done => {
+      const members = classTwo.getInterfaceMembers(program.getTypeChecker());
+      expect( members.length ).to.be.deep.equal( 3 );
+      done();
     })
-  });
+  })
+
+  describe("(method) => Class.getMembersSymbol()", () => {  });
 
   describe("(method) => Class.getMethods()", () => {
     it("should return an array of 1 member", () => {
       expect( classOne.getMethods().length ).to.be.deep.equal( 2 );
     })
   })
+
 
   describe("(method) => Class.hasMemberUsingDecorator()", () => {
     it("should return an array of class members", () => {

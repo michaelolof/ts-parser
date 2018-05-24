@@ -1,6 +1,6 @@
 import { ClassDeclaration, Symbol, TypeChecker, SourceFile, Node, SyntaxKind } from 'typescript';
 import { SymbolizedMemberArray, SymbolizedHolder } from './Checker';
-import { ClassMember, Method } from './Member';
+import { ClassMember, Method, InterfaceClassMember } from './Member';
 import { Range } from './utilities';
 import { find as _find } from "./utilities"
 import { Variable } from './Variable';
@@ -30,6 +30,39 @@ export class Class {
       this.__members.push( member );
     }
     return this.__members;
+  }
+
+  getInterfaceMembers(checker?:TypeChecker) {
+    const members = this.element["symbol"].members as Map<string, Symbol>
+    members.delete( "__constructor" );
+    members.delete("this");
+    const classMembers:InterfaceClassMember[] = [];
+    const member = members.values();
+    const firstSymbol = member.next().value;
+    if( firstSymbol ) classMembers.push( new InterfaceClassMember( firstSymbol, this.filePath ) ); 
+    let nextMember = member.next();
+    while( nextMember.done === false ) {
+      const nextSymbol = nextMember.value;
+      if( nextSymbol ) classMembers.push( new InterfaceClassMember( nextSymbol, this.filePath ) )
+      nextMember = member.next();    
+    }
+    return classMembers;    
+  }
+  
+  _getInterfaceMembers(checker?:TypeChecker) {
+    const members = this.element["symbol"].members as Map<string, Symbol>
+    members.delete( "__constructor" );
+    const classMembers:ClassMember[] = [];
+    const member = members.values();
+    const firstMember = member.next().value.valueDeclaration;
+    if( firstMember ) classMembers.push( new ClassMember( firstMember, this.filePath ) ); 
+    let nextMember = member.next();
+    while( nextMember.done === false ) {
+      const nextMemberElement = nextMember.value.valueDeclaration;
+      if( nextMemberElement ) classMembers.push( new ClassMember( nextMemberElement, this.filePath ) )
+      nextMember = member.next();    
+    }
+    return classMembers;
   }
 
   getMembersSymbol():Map<string,Symbol>| undefined {

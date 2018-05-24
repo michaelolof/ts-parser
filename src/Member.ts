@@ -1,9 +1,9 @@
-import { Node, SyntaxKind, MethodDeclaration, SourceFile, Block, TypeChecker, Symbol, Identifier }  from 'typescript';
+import { Node, SyntaxKind, MethodDeclaration, SourceFile, Block, TypeChecker, Symbol, Identifier, createNode, isClassDeclaration }  from 'typescript';
 import { Decorator } from './Decorator';
 import { ThisCall } from './Statement';
-import { getInlineRangeFromPosition, Range } from './utilities';
+import { getInlineRangeFromPosition, Range, findWhere, find } from './utilities';
 import { SymbolizedMember } from './Checker';
-import { find } from '.';
+import { Class } from './Class';
 
 export class Member {
   readonly element:Node;
@@ -158,5 +158,36 @@ export class Method extends Member {
 
 }
 
+export class InterfaceClassMember extends ClassMember {
+
+  constructor(public symbol:Symbol, public filePath:string) {
+    super( symbol.valueDeclaration as Node, filePath );
+  }
+
+  get name() {
+    return this.symbol.escapedName as string;
+  }
+
+  getSymbolSignature(checker:TypeChecker, node?:Node):string {
+    if( node === undefined ) node = this.element
+    return checker.typeToString(
+      checker.getTypeOfSymbolAtLocation( this.symbol, node )
+    );
+  }
+
+
+  static FindWhere(source:SourceFile, className:string, checker?:TypeChecker) {
+
+    return findWhere( source, node => {
+      if( isClassDeclaration( node ) ) {
+        const cls = new Class( node, source.fileName );
+        if( cls.name === className ) return cls.getInterfaceMembers(checker)
+        else return undefined
+      }
+      else return undefined
+    })
+  
+  }
+}
 
 
