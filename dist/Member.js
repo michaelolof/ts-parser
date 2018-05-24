@@ -252,4 +252,3 @@ var InterfaceClassMember = (function (_super) {
     return InterfaceClassMember;
 }(ClassMember));
 exports.InterfaceClassMember = InterfaceClassMember;
-//# sourceMappingURL=Member.js.map

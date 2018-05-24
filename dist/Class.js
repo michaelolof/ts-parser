@@ -187,4 +187,3 @@ Class.prototype.getNameRange = Variable_1.Variable.prototype.getNameRange;
 Class.prototype.getMethods = Variable_1.Variable.prototype.getMethods;
 Class.prototype.getMember = Variable_1.Variable.prototype.getMember;
 Class.prototype.toSymbolizedHolder = Variable_1.Variable.prototype.toSymbolizedHolder;
-//# sourceMappingURL=Class.js.map
