@@ -1,6 +1,6 @@
 import { ClassDeclaration, Symbol, TypeChecker, SourceFile, Node } from 'typescript';
 import { SymbolizedMemberArray, SymbolizedHolder } from './Checker';
-import { ClassMember, Method } from './Member';
+import { ClassMember, Method, InterfaceClassMember } from './Member';
 import { Range } from './utilities';
 export declare class Class {
     element: ClassDeclaration;
@@ -10,6 +10,8 @@ export declare class Class {
     constructor(element: ClassDeclaration, filePath: string);
     readonly name: string;
     getMembers(): ClassMember[];
+    getInterfaceMembers(checker?: TypeChecker): InterfaceClassMember[];
+    _getInterfaceMembers(checker?: TypeChecker): ClassMember[];
     getMembersSymbol(): Map<string, Symbol> | undefined;
     hasMembersUsingDecorator(decoratorName: string): ClassMember[];
     getMemberUsingDecorator(decoratorName: string, memberName: string): ClassMember | undefined;

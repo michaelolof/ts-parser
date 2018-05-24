@@ -65,6 +65,41 @@ var Class = (function () {
         }
         return this.__members;
     };
+    Class.prototype.getInterfaceMembers = function (checker) {
+        var members = this.element["symbol"].members;
+        members.delete("__constructor");
+        members.delete("this");
+        var classMembers = [];
+        var member = members.values();
+        var firstSymbol = member.next().value;
+        if (firstSymbol)
+            classMembers.push(new Member_1.InterfaceClassMember(firstSymbol, this.filePath));
+        var nextMember = member.next();
+        while (nextMember.done === false) {
+            var nextSymbol = nextMember.value;
+            if (nextSymbol)
+                classMembers.push(new Member_1.InterfaceClassMember(nextSymbol, this.filePath));
+            nextMember = member.next();
+        }
+        return classMembers;
+    };
+    Class.prototype._getInterfaceMembers = function (checker) {
+        var members = this.element["symbol"].members;
+        members.delete("__constructor");
+        var classMembers = [];
+        var member = members.values();
+        var firstMember = member.next().value.valueDeclaration;
+        if (firstMember)
+            classMembers.push(new Member_1.ClassMember(firstMember, this.filePath));
+        var nextMember = member.next();
+        while (nextMember.done === false) {
+            var nextMemberElement = nextMember.value.valueDeclaration;
+            if (nextMemberElement)
+                classMembers.push(new Member_1.ClassMember(nextMemberElement, this.filePath));
+            nextMember = member.next();
+        }
+        return classMembers;
+    };
     Class.prototype.getMembersSymbol = function () {
         if (this.element["symbol"] === undefined)
             return undefined;

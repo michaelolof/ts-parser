@@ -32,6 +32,7 @@ export class Class {
     return this.__members;
   }
 
+  //@ts-ignore  
   getInterfaceMembers(checker?:TypeChecker) {
     const members = this.element["symbol"].members as Map<string, Symbol>
     members.delete( "__constructor" );
@@ -49,6 +50,7 @@ export class Class {
     return classMembers;    
   }
   
+  //@ts-ignore
   _getInterfaceMembers(checker?:TypeChecker) {
     const members = this.element["symbol"].members as Map<string, Symbol>
     members.delete( "__constructor" );

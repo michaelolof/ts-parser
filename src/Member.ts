@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, MethodDeclaration, SourceFile, Block, TypeChecker, Symbol, Identifier, createNode, isClassDeclaration }  from 'typescript';
+import { Node, SyntaxKind, MethodDeclaration, SourceFile, Block, TypeChecker, Symbol, Identifier, isClassDeclaration }  from 'typescript';
 import { Decorator } from './Decorator';
 import { ThisCall } from './Statement';
 import { getInlineRangeFromPosition, Range, findWhere, find } from './utilities';
