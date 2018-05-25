@@ -6,6 +6,7 @@ export function createMockSource(sourceText:string):SourceFile {
 
 
 export const mockFiles = {
+  checker: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Checker.mock.ts",
   class:`C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Class.mock.ts`,
   interfaceClassMember: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\InterfaceClassMember.mock.ts",
 }
