@@ -59,6 +59,9 @@ var Class = (function () {
         enumerable: true,
         configurable: true
     });
+    Class.prototype.getImplementedInterface = function () {
+        return this.name;
+    };
     Class.prototype.getMembers = function () {
         if (this.__members)
             return this.__members;

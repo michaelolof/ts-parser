@@ -16,8 +16,8 @@ export class Class {
     return this.element.name!["escapedText"] as string
   }
 
-  get implementsAnInterface() {
-    return true;
+  getImplementedInterface() {
+    return this.name
   }
 
   /**

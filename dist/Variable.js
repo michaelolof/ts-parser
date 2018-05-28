@@ -61,6 +61,9 @@ var Variable = (function () {
         enumerable: true,
         configurable: true
     });
+    Variable.prototype.getImplementedInterface = function () {
+        console.log(this.element.type);
+    };
     Variable.prototype.isOf = function (type) {
         return this instanceof type;
     };

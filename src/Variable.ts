@@ -18,9 +18,9 @@ export class Variable {
     return this.element.name["escapedText"] as string;
   }
 
-  get implementsAnInterface() {
-    if( this.element.type ) return true
-    else return false;
+  getImplementedInterface() {
+    if( this.element.type ) return this.element.type.getText();
+    else return undefined;    
   }
 
   isOf(type:any):this is Variable {

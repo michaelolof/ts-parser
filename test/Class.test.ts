@@ -67,6 +67,12 @@ describe("(class) => Class.ts", () => {
     });
   });
 
+  describe("(method) => Class.getImplementedInterface()", () => {
+    it("should return the implemented interface", () => {
+      
+    })
+  });
+
   describe("(method) => Class.getMembers()", () => {
     it("should return an array of 4 members", () => {
       expect(classOne.getMembers().length).to.be.deep.equal(4);

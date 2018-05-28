@@ -1,4 +1,4 @@
-import { SymbolizedHolder, SymbolizedHolderArray, SymbolizedMemberArray } from '../src/Checker';
+import { SymbolizedHolder, SymbolizedMemberArray } from '../src/Checker';
 import { Mixin } from '../src/Mixin';
 import { program, mockFiles } from './index.test';
 import { expect } from 'chai';
@@ -9,7 +9,9 @@ describe("(class) => SymbolizedHolder", () => {
 
   before( async () => {
     const source = program.getSourceFile( mockFiles.checker );
+    if( source === undefined ) throw new Error("source file cannot be found at " + mockFiles.checker );
     const mixins = await Mixin.Find( source );
+    if( mixins === undefined ) throw new Error("mixins not found at " + mockFiles.checker );
     mixins
     .map( async mixin => await mixin.toSymbolizedHolder("mixin", program.getTypeChecker() ) )
     .map( async holder => mixinHolders.push( await holder ) );
