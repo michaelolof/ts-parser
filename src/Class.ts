@@ -16,6 +16,10 @@ export class Class {
     return this.element.name!["escapedText"] as string
   }
 
+  get implementsAnInterface() {
+    return true;
+  }
+
   /**
    * Returns an array of ClassMembers minus constructor if found and undefined if not found.
    */

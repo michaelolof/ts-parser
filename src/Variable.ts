@@ -18,6 +18,11 @@ export class Variable {
     return this.element.name["escapedText"] as string;
   }
 
+  get implementsAnInterface() {
+    if( this.element.type ) return true
+    else return false;
+  }
+
   isOf(type:any):this is Variable {
     return this instanceof type;
   }
@@ -82,7 +87,7 @@ export class Variable {
   }
 
   static IsAVariable(node:Node):node is VariableDeclaration {
-    const otherTruths = node["initializer"] && node["type"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
+    const otherTruths = node["initializer"] && node["initializer"].kind === SyntaxKind.ObjectLiteralExpression
     if( otherTruths ) {
       return isVariableDeclaration( node );
     }
