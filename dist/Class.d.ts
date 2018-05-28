@@ -9,7 +9,6 @@ export declare class Class {
     mixinNames?: string[];
     constructor(element: ClassDeclaration, filePath: string);
     readonly name: string;
-    readonly implementsAnInterface: boolean;
     getImplementedInterface(): string;
     getMembers(): ClassMember[];
     getInterfaceMembers(checker?: TypeChecker): InterfaceClassMember[];

@@ -51,18 +51,11 @@ var Variable = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Variable.prototype, "implementsAnInterface", {
-        get: function () {
-            if (this.element.type)
-                return true;
-            else
-                return false;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Variable.prototype.getImplementedInterface = function () {
-        console.log(this.element.type);
+        if (this.element.type)
+            return this.element.type.getText();
+        else
+            return undefined;
     };
     Variable.prototype.isOf = function (type) {
         return this instanceof type;
