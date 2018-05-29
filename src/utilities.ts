@@ -1,6 +1,10 @@
 import { Identifier, Node, SyntaxKind, SourceFile, Token, ImportDeclaration, DiagnosticCategory } from 'typescript';
 
 export function getInlineRangeFromPosition(namedElement: Identifier, source: SourceFile = namedElement.getSourceFile(), name = namedElement.escapedText as string) {
+  if( namedElement.escapedText === undefined && namedElement["name"] ) {
+    namedElement = namedElement["name"]
+    name = namedElement.escapedText as string;
+  }
   const endPosition: Position = source.getLineAndCharacterOfPosition(namedElement.end)
   const startPosition: Position = { line: endPosition.line, character: endPosition.character - name.length };
   return {
