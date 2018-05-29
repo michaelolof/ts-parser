@@ -39,7 +39,7 @@ var typescript_1 = require("typescript");
 function getInlineRangeFromPosition(namedElement, source, name) {
     if (source === void 0) { source = namedElement.getSourceFile(); }
     if (name === void 0) { name = namedElement.escapedText; }
-    if (namedElement.escapedText === undefined && namedElement["name"]) {
+    if (namedElement.escapedText === undefined && namedElement["name"] && namedElement["name"].escapedText) {
         namedElement = namedElement["name"];
         name = namedElement.escapedText;
     }
