@@ -10,6 +10,7 @@ export const mockFiles = {
   class:`C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Class.mock.ts`,
   interfaceClassMember: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\InterfaceClassMember.mock.ts",
   variable: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Variable.mock.ts",
+  member: "C:\\Users\\Michael\\Desktop\\M.O.O\\Programs\\custom-npm-modules\\ts-parser\\test\\mock\\Member.mock.ts",
 }
 
 const objectValues = (obj:object) => Object.keys( obj ).map( key => mockFiles[ key ]) as string[];

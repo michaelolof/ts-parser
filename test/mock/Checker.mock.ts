@@ -12,5 +12,12 @@ class SymbolizedHolderOne {
   getBio() {
     return `${ this.fullName } is ${ this.age } years old.`
   }
+}
+
+/**
+ * #2
+ * @test - SymbolizedHolder.getMemberMethods()
+ */
+class HolderTwo {
 
 }

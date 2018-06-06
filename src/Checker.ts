@@ -1,5 +1,6 @@
 import { ThisCall } from './Statement';
 import { Range } from "./utilities";
+import { MemberType } from './Member';
 
 export class SymbolizedHolder {
   constructor(
@@ -28,9 +29,16 @@ export class SymbolizedHolder {
   }
 
   /**
-   * Checks if the client has member with the same name.
+   * Returns an array of members which can be methods, get accessors or set accesors
    */
-  
+  getAllMembersExceptProperties() {
+    const members = new SymbolizedMemberArray();
+    for(let member of this.members) {
+      if( member.type !== "property" ) members.push( member );
+    }
+    return members;
+  }
+ 
 }
 
 export class SymbolArray<T> {
@@ -94,7 +102,7 @@ export class SymbolizedHolderArray extends SymbolArray<SymbolizedHolder> {
 
 export class SymbolizedMember {
   constructor(
-    public type:"property" | "method",
+    public type:MemberType,
     public memberName:string,
     public memberRange:Range,
     public signature:string,

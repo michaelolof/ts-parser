@@ -77,7 +77,7 @@ describe("(class) => Class.ts", () => {
     it("should return an array of 4 members", () => {
       expect(classOne.getMembers().length).to.be.deep.equal(4);
     })
-  })
+  });
 
   describe("(method) => Class.getMember(string)", () => {
     it("should return a member which is an instance of ClassMember", () => {

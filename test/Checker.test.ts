@@ -9,12 +9,11 @@ describe("(class) => SymbolizedHolder", () => {
 
   before( async () => {
     const source = program.getSourceFile( mockFiles.checker );
-    if( source === undefined ) throw new Error("source file cannot be found at " + mockFiles.checker );
     const mixins = await Mixin.Find( source );
-    if( mixins === undefined ) throw new Error("mixins not found at " + mockFiles.checker );
-    mixins
-    .map( async mixin => await mixin.toSymbolizedHolder("mixin", program.getTypeChecker() ) )
-    .map( async holder => mixinHolders.push( await holder ) );
+    for( let mixin of mixins ) {
+      const holder = await mixin.toSymbolizedHolder( "mixin", program.getTypeChecker() )
+      mixinHolders.push( holder );
+    }
   })
 
   describe("(method) => getMemberProperties()", () => {
@@ -22,24 +21,30 @@ describe("(class) => SymbolizedHolder", () => {
     before( () => { props = mixinHolders[0].getMemberProperties() })
     
     it("(mock#1 SymbolizedHolderOne) should return an array of 4 members", () => {
-      expect( props.length ).to.be.equal( 4 );
+      expect( props.length ).to.be.equal( 3 );
     });
 
     it("(mock#1 SymbolizedHolderOne) should return correct names for each member", () => {
       expect( props.array[0].memberName ).to.be.deep.equal("firstName");
       expect( props.array[1].memberName ).to.be.deep.equal("lastName");
       expect( props.array[2].memberName ).to.be.deep.equal("age");
-      expect( props.array[3].memberName ).to.be.deep.equal("fullName");
     });
 
     it("(mock#1 SymbolizedHolderOne) should return correct signatures each member", () => {
       expect( props.array[0].signature ).to.be.deep.equal("string");
       expect( props.array[1].signature ).to.be.deep.equal("string");
       expect( props.array[2].signature ).to.be.deep.equal("number");
-      expect( props.array[3].signature ).to.be.deep.equal("string");
     });
   });
 
-  
+  describe("(method) => getMemberMethods()", () => {
+    let holder:SymbolizedHolder;
+
+    before(() => { holder = mixinHolders[ 1 ] })
+
+    it("should..", () => {
+      
+    })
+  });
 
 })

@@ -47,3 +47,22 @@ class Shopper {
   }
 
 }
+
+// #5
+class ClassFive {
+  
+  private age:number
+  
+  constructor(public firstName:string, public lastName:string, age:number) {
+    this.age = age;
+  }
+
+  getAge() {
+    return this.age;
+  }
+
+  get fullName() {
+    return this.firstName + " " + this.lastName;
+  }
+
+}

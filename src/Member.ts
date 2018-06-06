@@ -5,6 +5,8 @@ import { getInlineRangeFromPosition, Range, findWhere, find } from './utilities'
 import { SymbolizedMember } from './Checker';
 import { Class } from './Class';
 
+export type MemberType = "method" | "property" | "getter" | "setter"
+
 export class Member {
   readonly element:Node;
   readonly filePath:string;
@@ -19,6 +21,20 @@ export class Member {
     else return this.element["name"].escapedText as string
   }
 
+  getType():MemberType {
+    switch( this.element.kind ) {
+      case SyntaxKind.PropertyDeclaration:
+        return "property"
+      case SyntaxKind.MethodDeclaration:
+        return "method"
+      case SyntaxKind.GetAccessor:
+        return "getter"
+      case SyntaxKind.SetAccessor:
+        return "setter"
+      default: return "property"
+    }
+  }
+
   isAMethod() {
     return Method.isAMethod( this.element );
   }
@@ -30,10 +46,9 @@ export class Member {
   }
 
   async getSymbolizedMember(checker:TypeChecker, node?:Node) {
-    let type:"method"|"property" = "property"
+    let type = this.getType() 
     let methodThisCall:ThisCall[]|undefined = undefined;
-    if( this.isAMethod() ) {
-      type = "method";
+    if( type === "method" ) {
       methodThisCall = await this.getMethodBodyThisCalls();
       var noOfArguments:number|undefined = this.getMethodNumberOfArguments();  
     }
